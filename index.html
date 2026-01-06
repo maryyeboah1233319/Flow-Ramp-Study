@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Flow Ramp Study</title>
-  <meta name="description" content="Flow Ramp + Study Session Builder (condition-aware) — MVP." />
+  <meta name="description" content="Flow Ramp + Study Session Builder + Flashcards + Grade calculator." />
   <style>
     :root{
       --bg: #0b0f14;
@@ -14,242 +14,446 @@
       --soft:#7f8aa1;
       --accent:#78c6b0;
       --accent2:#78a6ff;
-      --border: rgba(255,255,255,.08);
+      --border: rgba(255,255,255,.10);
       --shadow: 0 12px 40px rgba(0,0,0,.35);
-      --radius: 16px;
+      --radius: 18px;
       --focus: 0 0 0 3px rgba(120,198,176,.25);
       --danger:#ff6b6b;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
+
     *{box-sizing:border-box}
+    html, body{height:100%}
     body{
       margin:0;
       font-family: var(--sans);
-      background: radial-gradient(1200px 600px at 20% 0%, rgba(120,166,255,.10), transparent 60%),
-                  radial-gradient(900px 500px at 90% 10%, rgba(120,198,176,.12), transparent 55%),
-                  var(--bg);
+      font-size: 18px;           /* bigger base font */
+      line-height: 1.5;          /* more breathable */
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(120,166,255,.10), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(120,198,176,.12), transparent 55%),
+        var(--bg);
       color: var(--text);
-      line-height:1.35;
+      overflow-y: auto;          /* allow page scroll */
     }
-    .wrap{max-width: 1020px; margin:0 auto; padding: 28px 18px 56px;}
-    .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px;}
+
+    .wrap{
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 26px 16px 60px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+
     .brand{display:flex; align-items:center; gap:12px;}
-    .logo{width:40px;height:40px;border-radius:14px;background: linear-gradient(135deg, rgba(120,198,176,.95), rgba(120,166,255,.85));box-shadow: var(--shadow);}
-    h1{font-size:18px; margin:0; letter-spacing:.2px;}
-    .tag{font-size:12px; color: var(--muted); margin-top:2px;}
-    .pillbar{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
-    .pill{font-size:12px;padding:8px 10px;border:1px solid var(--border);border-radius:999px;color: var(--muted);background: rgba(255,255,255,.02);}
-    .grid{display:grid; grid-template-columns: 1.15fr .85fr; gap: 14px;}
-    @media (max-width: 900px){ .grid{grid-template-columns: 1fr;} .pillbar{justify-content:flex-start} }
-    .card{background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow:hidden;}
-    .card .head{padding: 16px 16px 10px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,.12);
-      display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
-    .card .head h2{margin:0; font-size:14px; letter-spacing:.2px;}
-    .card .head .sub{margin-top:4px; font-size:12px; color: var(--muted);}
-    .card .body{padding: 16px;}
-    .row{display:grid; grid-template-columns: 1fr 1fr; gap: 10px;}
-    @media (max-width: 520px){ .row{grid-template-columns:1fr} }
-    label{font-size:12px; color: var(--muted); display:block; margin-bottom:6px;}
-    select, textarea, input[type="text"], input[type="number"]{
-      width:100%; padding: 12px 12px; border-radius: 12px; border: 1px solid var(--border);
-      background: rgba(10,14,20,.65); color: var(--text); outline:none;
+    .logo{
+      width:44px;height:44px;border-radius:16px;
+      background: linear-gradient(135deg, rgba(120,198,176,.95), rgba(120,166,255,.85));
+      box-shadow: var(--shadow);
+      flex:0 0 auto;
     }
-    select:focus, textarea:focus, input:focus{ box-shadow: var(--focus); border-color: rgba(120,198,176,.35); }
+    h1{font-size:18px; margin:0; letter-spacing:.2px;}
+    .tag{font-size:13px; color: var(--muted); margin-top:2px;}
+
+    .pillbar{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+    .pill{
+      font-size:12px;padding:8px 10px;border:1px solid var(--border);
+      border-radius:999px;color: var(--muted);
+      background: rgba(255,255,255,.03);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns: 1fr;}
+      .pillbar{justify-content:flex-start}
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .head{
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,.12);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .card .head h2{margin:0; font-size:14px; letter-spacing:.2px;}
+    .card .head .sub{font-size:12px; color: var(--muted); margin-top:2px;}
+    .headLeft{display:flex; flex-direction:column; gap:2px;}
+
+    /* ✅ Key change: make right-side content scrollable, not trapped */
+    .scrollBody{
+      max-height: 72vh;     /* lets it scroll inside the card */
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    @media (max-width: 980px){
+      .scrollBody{max-height: none;} /* on small screens, page scroll is enough */
+    }
+
+    .body{padding: 16px;}
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap: 12px;}
+    @media (max-width: 560px){ .row{grid-template-columns:1fr} }
+
+    label{font-size:13px; color: var(--muted); display:block; margin-bottom:8px;}
+
+    select, textarea, input[type="text"], input[type="number"]{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(10,14,20,.65);
+      color: var(--text);
+      outline:none;
+      font-size: 16px; /* bigger input text */
+    }
+    select:focus, textarea:focus, input:focus{ box-shadow: var(--focus); border-color: rgba(120,198,176,.40); }
     textarea{ min-height: 120px; resize: vertical; }
+
     .toggles{display:flex; flex-wrap:wrap; gap:10px; margin-top: 8px;}
-    .toggle{display:flex; align-items:center; gap:8px; border:1px solid var(--border); background: rgba(255,255,255,.02);
-      padding: 10px 10px; border-radius: 12px; color: var(--muted); font-size: 12px; user-select:none;}
+    .toggle{
+      display:flex; align-items:center; gap:8px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      padding: 10px 10px;
+      border-radius: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      user-select:none;
+    }
     .toggle input{ accent-color: var(--accent); }
+
     .btnbar{display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px;}
     button{
-      border: 1px solid var(--border); background: rgba(255,255,255,.03); color: var(--text);
-      padding: 11px 12px; border-radius: 12px; cursor:pointer; font-weight: 600; font-size: 13px; letter-spacing:.15px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      padding: 11px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 650;
+      font-size: 14px;
+      letter-spacing:.15px;
     }
-    button:hover{ border-color: rgba(255,255,255,.18); }
+    button:hover{ border-color: rgba(255,255,255,.22); }
     button:focus{ outline:none; box-shadow: var(--focus); }
-    .primary{background: linear-gradient(135deg, rgba(120,198,176,.92), rgba(120,166,255,.72));
-      border-color: rgba(120,198,176,.35); color: #071017;}
-    .danger{border-color: rgba(255,107,107,.35); background: rgba(255,107,107,.08);}
-    .small{font-size: 12px; color: var(--muted);}
-    .hint{font-size: 12px; color: var(--soft); margin-top:8px;}
-    .divider{ height:1px; background: var(--border); margin: 14px 0; }
-    .progress{height: 10px; border-radius: 999px; background: rgba(255,255,255,.06); overflow:hidden; border: 1px solid var(--border);}
-    .progress > div{height:100%; width:0%; background: linear-gradient(90deg, rgba(120,198,176,.95), rgba(120,166,255,.80));}
-    .phase{padding: 14px; border-radius: 14px; border: 1px solid var(--border); background: rgba(0,0,0,.18); margin-bottom: 12px;}
-    .phase h3{margin:0 0 6px 0; font-size: 13px; letter-spacing:.2px;}
-    .phase .meta{font-size:12px; color: var(--muted); margin-bottom: 10px;}
-    .phase ul{ margin: 0; padding-left: 18px; }
-    .phase li{ margin: 6px 0; color: rgba(233,238,246,.95); }
+    .primary{
+      background: linear-gradient(135deg, rgba(120,198,176,.92), rgba(120,166,255,.70));
+      border-color: rgba(120,198,176,.35);
+      color: #071017;
+    }
+    .danger{border-color: rgba(255,107,107,.35); background: rgba(255,107,107,.10);}
 
-    .qcard{border:1px solid var(--border); border-radius: 14px; background: rgba(0,0,0,.18); padding: 14px; margin-bottom: 12px;}
-    .qtop{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
-    .qtitle{ font-weight:700; font-size: 13px; margin:0; }
-    .badge{font-size: 11px; color: #071017; background: linear-gradient(135deg, rgba(120,198,176,.95), rgba(120,166,255,.75));
-      padding: 5px 9px; border-radius: 999px; font-weight: 800; letter-spacing:.15px;}
-    .feedback{margin-top: 10px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border);
-      background: rgba(255,255,255,.02); color: rgba(233,238,246,.92); font-size: 12.5px; white-space: pre-wrap;}
-    .kbd{font-family: var(--mono); font-size: 12px; border:1px solid var(--border); padding: 2px 6px; border-radius: 8px;
-      color: var(--muted); background: rgba(255,255,255,.03);}
+    .small{font-size: 13px; color: var(--muted);}
+    .hint{font-size: 13px; color: var(--soft); margin-top:8px;}
+    .divider{ height:1px; background: var(--border); margin: 14px 0; }
+    .kbd{font-family: var(--mono); font-size: 12px; border:1px solid var(--border); padding: 2px 6px; border-radius: 10px; color: var(--muted); background: rgba(255,255,255,.03);}
 
     .tabs{display:flex; gap:8px; flex-wrap:wrap;}
-    .tabbtn{padding:9px 10px; border-radius: 999px;}
-    .tabbtn.active{border-color: rgba(120,198,176,.35); background: rgba(120,198,176,.10);}
+    .tabbtn{padding:9px 12px; border-radius: 999px;}
+    .tabbtn.active{border-color: rgba(120,198,176,.40); background: rgba(120,198,176,.12);}
+
+    .progress{height: 10px; border-radius: 999px; background: rgba(255,255,255,.07); overflow:hidden; border: 1px solid var(--border);}
+    .progress > div{height:100%; width:0%; background: linear-gradient(90deg, rgba(120,198,176,.95), rgba(120,166,255,.80));}
+
+    .phase{
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.18);
+      margin-bottom: 12px;
+    }
+    .phase h3{margin:0 0 6px 0; font-size: 15px; letter-spacing:.2px;}
+    .phase .meta{font-size:13px; color: var(--muted); margin-bottom: 10px;}
+    .phase ul{ margin: 0; padding-left: 18px; }
+    .phase li{ margin: 10px 0; }
+
+    /* ====================
+       Flashcards (Quizlet-like)
+       ==================== */
+    .cardStage{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+    }
+    .flashWrap{
+      width:min(740px, 100%);
+    }
+    .flashCard{
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(0,0,0,.20);
+      padding: 22px;
+      min-height: 240px;
+      box-shadow: 0 10px 32px rgba(0,0,0,.25);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      cursor:pointer;
+      user-select:none;
+    }
+    .flashTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+    .flashMeta{
+      font-size: 13px;
+      color: var(--muted);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .chip{
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+    }
+    .flashMain{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .flashLabel{
+      font-size: 12px;
+      color: var(--soft);
+      letter-spacing:.18px;
+      text-transform: uppercase;
+    }
+    .flashText{
+      font-size: 20px;
+      line-height: 1.35;
+      letter-spacing:.1px;
+      word-break: break-word;
+    }
+    .flashFooter{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .star{
+      font-size: 18px;
+      line-height: 1;
+      padding: 6px 10px;
+      border-radius: 12px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      cursor:pointer;
+    }
+    .star.on{border-color: rgba(255, 214, 102, .5); background: rgba(255, 214, 102, .10); color: #ffd666;}
+    .flashControls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+      justify-content:center;
+    }
+    .miniGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 560px){ .miniGrid{grid-template-columns:1fr} }
+
+    .editor{
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(0,0,0,.16);
+    }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <h1>Flow Ramp Study</h1>
-          <div class="tag">Flow Ramp → Session plan → Practice • Notes upload • Grade calculator</div>
-        </div>
-      </div>
-      <div class="pillbar">
-        <div class="pill">No login</div>
-        <div class="pill">Phone-friendly</div>
-        <div class="pill">Neutral tone</div>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>Flow Ramp Study</h1>
+        <div class="tag">Study sessions • Flashcards • Grade calculator</div>
       </div>
     </div>
+    <div class="pillbar">
+      <div class="pill">Bigger type</div>
+      <div class="pill">Scroll fixed</div>
+      <div class="pill">Flashcards</div>
+      <div class="pill">No login</div>
+    </div>
+  </div>
 
-    <div class="grid">
-      <!-- LEFT -->
-      <div class="card">
-        <div class="head">
-          <div>
-            <h2>Session Builder</h2>
-            <div class="sub">Build a study session that matches capacity and your exam methods.</div>
-          </div>
-          <div class="small"><span class="kbd">MVP</span></div>
+  <div class="grid">
+    <!-- LEFT: builder -->
+    <div class="card">
+      <div class="head">
+        <div class="headLeft">
+          <h2>Session Builder</h2>
+          <div class="sub">Short prompts. Clear steps. Exam-ready.</div>
         </div>
-        <div class="body">
-          <div class="row">
-            <div>
-              <label for="energy">Energy</label>
-              <select id="energy">
-                <option>Low</option>
-                <option selected>Medium</option>
-                <option>High</option>
-              </select>
-            </div>
-            <div>
-              <label for="focus">Focus</label>
-              <select id="focus">
-                <option selected>Foggy</option>
-                <option>Okay</option>
-                <option>Alert</option>
-              </select>
+        <div class="small"><span class="kbd">MVP</span></div>
+      </div>
+
+      <div class="body">
+        <div class="row">
+          <div>
+            <label for="energy">Energy</label>
+            <select id="energy">
+              <option>Low</option>
+              <option selected>Medium</option>
+              <option>High</option>
+            </select>
+          </div>
+          <div>
+            <label for="focus">Focus</label>
+            <select id="focus">
+              <option selected>Foggy</option>
+              <option>Okay</option>
+              <option>Alert</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:12px;">
+          <div>
+            <label for="subjectType">Subject type</label>
+            <select id="subjectType">
+              <option selected>Reading / Memorization</option>
+              <option>STEM / Problem-Solving</option>
+              <option>Writing / Humanities</option>
+            </select>
+          </div>
+          <div>
+            <label for="time">Time available</label>
+            <select id="time">
+              <option>20</option>
+              <option selected>35</option>
+              <option>50</option>
+              <option>75</option>
+              <option>120</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:12px;">
+          <div>
+            <label for="mode">Mode</label>
+            <select id="mode">
+              <option selected>Midterm Review</option>
+              <option>Finals Crunch</option>
+              <option>Homework / Lab</option>
+            </select>
+          </div>
+          <div>
+            <label for="preset">Method preset</label>
+            <select id="preset">
+              <option selected>One-by-One Q&A</option>
+              <option>Formula Recognition</option>
+              <option>Fill-in-the-Blank Drill</option>
+              <option>Reverse-Order Teaching</option>
+              <option>Full-Length Practice Exam</option>
+              <option>Mixed Review (Finals)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:12px;">
+          <div>
+            <label for="course">Course / label (optional)</label>
+            <input id="course" type="text" placeholder="e.g., QTM 100 — Inference & Regression" />
+          </div>
+          <div>
+            <label>Focus toggle (optional)</label>
+            <div class="toggles">
+              <label class="toggle"><input type="checkbox" id="tBrainfog"> Brain fog</label>
             </div>
           </div>
+        </div>
 
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label for="subjectType">Subject type</label>
-              <select id="subjectType">
-                <option selected>Reading / Memorization</option>
-                <option>STEM / Problem-Solving</option>
-                <option>Writing / Humanities</option>
-              </select>
-            </div>
-            <div>
-              <label for="time">Time available</label>
-              <select id="time">
-                <option>20</option>
-                <option selected>35</option>
-                <option>50</option>
-                <option>75</option>
-                <option>120</option>
-              </select>
-            </div>
+        <div style="margin-top:14px;">
+          <label for="notesFile">Upload notes (TXT/MD)</label>
+          <input id="notesFile" type="file" accept=".txt,.md,text/plain,text/markdown" />
+          <div class="btnbar" style="margin-top:10px;">
+            <button id="btnUseNotes">Use notes as Topics</button>
+            <button id="btnAppendNotes">Append notes</button>
+            <button id="btnMakeDeck">Make Flashcards from Topics</button>
           </div>
+          <div class="hint">Best results: headings/bullets. If your notes contain “Term: definition”, flashcards will auto-fill backs.</div>
+        </div>
 
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label for="mode">Mode</label>
-              <select id="mode">
-                <option selected>Midterm Review</option>
-                <option>Finals Crunch</option>
-                <option>Homework / Lab</option>
-              </select>
-            </div>
-            <div>
-              <label for="preset">Your method preset</label>
-              <select id="preset">
-                <option selected>One-by-One Q&A</option>
-                <option>Formula Recognition</option>
-                <option>Fill-in-the-Blank Drill</option>
-                <option>Reverse-Order Teaching</option>
-                <option>Full-Length Practice Exam</option>
-                <option>Mixed Review (Finals)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label for="course">Course / label (optional)</label>
-              <input id="course" type="text" placeholder="e.g., QTM 100 — Inference & Regression" />
-            </div>
-            <div>
-              <label>Condition toggles (optional)</label>
-              <div class="toggles">
-                <label class="toggle"><input type="checkbox" id="tBrainfog"> Brain fog</label>
-                <label class="toggle"><input type="checkbox" id="tNausea"> Nausea day</label>
-              </div>
-            </div>
-          </div>
-
-          <div style="margin-top:12px;">
-            <label for="notesFile">Upload notes (TXT/MD) → auto-fill Topics</label>
-            <input id="notesFile" type="file" accept=".txt,.md,text/plain,text/markdown" />
-            <div class="hint">Best on phone: export notes as .txt and upload here. This stays in your browser (no server).</div>
-            <div class="btnbar" style="margin-top:8px;">
-              <button id="btnUseNotes">Use uploaded notes as Topics</button>
-              <button id="btnAppendNotes">Append notes to Topics</button>
-            </div>
-          </div>
-
-          <div style="margin-top:12px;">
-            <label for="topics">Topics (paste bullets / headings / messy notes)</label>
-            <textarea id="topics" placeholder="Example:
+        <div style="margin-top:14px;">
+          <label for="topics">Topics</label>
+          <textarea id="topics" placeholder="Example:
 - z test vs t test
 - chi-square association
 - ANOVA + post hoc
 - regression slope/intercept
 - assumptions + residual plots"></textarea>
-            <div class="hint">Tip: paste your review sheet headings. The app will generate warm-up + practice items from them.</div>
-          </div>
-
-          <div class="btnbar">
-            <button class="primary" id="btnGenerate">Generate Session</button>
-            <button id="btnReset">Reset</button>
-          </div>
-
-          <div class="small" style="margin-top:10px;">
-            Academic support tool only.
-          </div>
+          <div class="hint">Tip: paste your exam review sheet headings.</div>
         </div>
-      </div>
 
-      <!-- RIGHT -->
-      <div class="card">
-        <div class="head">
-          <div>
-            <h2 id="outTitle">Output</h2>
-            <div class="sub" id="outSub">Generate a session or use the Grade Calculator tab.</div>
-          </div>
-          <div class="tabs">
-            <button class="tabbtn active" id="tabStudy">Study</button>
-            <button class="tabbtn" id="tabGrades">Grades</button>
-          </div>
+        <div class="btnbar">
+          <button class="primary" id="btnGenerate">Generate Session</button>
+          <button id="btnReset">Reset</button>
         </div>
-        <div class="body" id="outBody"></div>
+
+        <div class="small" style="margin-top:10px;">
+          Academic support tool only. No medical advice/diagnosis.
+        </div>
       </div>
     </div>
+
+    <!-- RIGHT: output -->
+    <div class="card">
+      <div class="head">
+        <div class="headLeft">
+          <h2 id="outTitle">Output</h2>
+          <div class="sub" id="outSub">Pick a tab.</div>
+        </div>
+        <div class="tabs">
+          <button class="tabbtn active" id="tabStudy">Study</button>
+          <button class="tabbtn" id="tabFlash">Flashcards</button>
+          <button class="tabbtn" id="tabGrades">Grades</button>
+        </div>
+      </div>
+
+      <div class="body scrollBody" id="outBody"></div>
+    </div>
   </div>
+</div>
 
 <script>
 /* ========= Helpers ========= */
@@ -271,6 +475,11 @@ function parseTopics(raw){
   return [...new Set(cleaned)];
 }
 
+function safeCourseLabel(course){
+  const c = (course||"").trim();
+  return c ? c : "Your session";
+}
+
 function loadFactor(energy, focus, toggles){
   let f = 1.0;
   if(energy === "Low") f -= 0.22;
@@ -278,7 +487,6 @@ function loadFactor(energy, focus, toggles){
   if(focus === "Foggy") f -= 0.20;
   if(focus === "Alert") f += 0.08;
   if(toggles.brainfog) f -= 0.10;
-  if(toggles.nausea) f -= 0.06;
   return clamp(f, 0.55, 1.15);
 }
 
@@ -298,99 +506,156 @@ function timePlan(total){
   return {plan, active, check, wrap};
 }
 
-function safeCourseLabel(course){
-  const c = (course||"").trim();
-  return c ? c : "Your session";
-}
-
-/* ========= Flow Ramp ========= */
+/* ========= Tone: shorter, less AI-ish ========= */
 function buildFlowRamp({energy, focus, subjectType, lf}){
   const rampMin = estRampMinutes(energy, focus, lf);
 
-  const ignition = { title:"Phase 1 — Cognitive Ignition", minutes: clamp(Math.round(rampMin*0.30),2,5), bullets:[] };
-  const bridge  = { title:"Phase 2 — Engagement Bridge", minutes: clamp(Math.round(rampMin*0.55),4,10), bullets:[] };
-  const entry   = { title:"Flow Entry", minutes: clamp(rampMin - ignition.minutes - bridge.minutes,0,4), bullets:[] };
+  const warm = { title:"Warm-Up", minutes: clamp(Math.round(rampMin*0.30),2,5), bullets:[] };
+  const activate  = { title:"Activation", minutes: clamp(Math.round(rampMin*0.55),4,10), bullets:[] };
+  const focusEntry   = { title:"Focused Work", minutes: clamp(rampMin - warm.minutes - activate.minutes,0,4), bullets:[] };
 
   if(subjectType.startsWith("Reading")){
-    ignition.bullets = [
-      "Skim headings and bold terms. Don’t memorize—just orient.",
-      "Mark 3 central concepts (no deep notes yet)."
+    warm.bullets = [
+      "Skim headings and key terms. Track structure.",
+      "Mark 2–3 priority concepts."
     ];
-    bridge.bullets = [
-      "Write a 2–3 sentence summary of one concept in your own words.",
-      "Answer 1 easy question: “What is this concept trying to explain?”"
+    activate.bullets = [
+      "Summarize one concept in 2–3 sentences.",
+      "Answer one basic comprehension question."
     ];
-    entry.bullets = ["Choose one main topic. Begin active recall or practice questions."];
+    focusEntry.bullets = ["Start recall or practice questions on the main topic."];
   } else if(subjectType.startsWith("STEM")){
-    ignition.bullets = [
-      "Scan formulas/steps for today’s topic. Identify the ‘type’ of problem.",
-      "Re-read one worked example quickly (no solving yet)."
+    warm.bullets = [
+      "Identify the problem type (test/formula/steps).",
+      "Scan one worked example."
     ];
-    bridge.bullets = [
-      "Do 1 medium problem slowly, labeling each step and why it’s used.",
-      "Then do 1 shorter problem with fewer notes."
+    activate.bullets = [
+      "Do one medium problem with labeled steps.",
+      "Do one shorter problem with fewer notes."
     ];
-    entry.bullets = ["Start your main practice set. Aim for steady accuracy first."];
+    focusEntry.bullets = ["Begin your main practice set. Prioritize accuracy."];
   } else {
-    ignition.bullets = [
-      "Re-read your last paragraph or outline. Highlight the main claim.",
-      "List 3 points you want to argue/explain (no full sentences yet)."
+    warm.bullets = [
+      "Confirm your claim and outline.",
+      "List 3 points (bullets only)."
     ];
-    bridge.bullets = [
-      "Draft 6–8 bullet lines for one paragraph (claim → evidence → link).",
-      "Rewrite one sentence for clarity (short + direct)."
+    activate.bullets = [
+      "Draft one paragraph as bullets (claim → evidence → link).",
+      "Rewrite one sentence for clarity."
     ];
-    entry.bullets = ["Begin drafting your main section. Keep momentum."];
+    focusEntry.bullets = ["Start your main section and keep momentum."];
   }
 
   if(lf < 0.75){
-    ignition.bullets = ignition.bullets.slice(0,1);
-    bridge.bullets = bridge.bullets.slice(0,1);
+    warm.bullets = warm.bullets.slice(0,1);
+    activate.bullets = activate.bullets.slice(0,1);
   }
   if(lf > 1.05){
-    bridge.bullets.push("Optional: teach the concept out loud in 30–60 seconds.");
+    activate.bullets.push("Optional: explain the key idea out loud in 30–60 seconds.");
   }
 
-  return {rampMin, phases:[ignition, bridge, entry]};
+  return {rampMin, phases:[warm, activate, focusEntry]};
 }
 
-/* ========= Study content generators ========= */
 function buildHint(subjectType){
   if(subjectType.startsWith("STEM")){
-    return "Anchor on: variable types, number of groups, independent vs paired, and whether the goal is estimate/compare/associate.";
+    return "Use cues: variable types, number of groups, paired vs independent, and the question goal.";
   }
   if(subjectType.startsWith("Writing")){
-    return "Use a tight structure: claim → evidence/example → link back to the prompt.";
+    return "Structure: claim → evidence → link back to prompt.";
   }
-  return "Answer like a key: definition + one example + one recognition cue.";
+  return "Use: definition + example + one recognition cue.";
 }
 
 function buildCheck(){
-  return "Check: Is it specific, correct, and test-ready? Add one cue that helps you recognize it under exam pressure.";
+  return "Check: specific, correct, exam-ready. Add one cue you’ll use under time pressure.";
 }
 
+/* ========= Flashcards ========= */
+function parseCardsFromNotes(text){
+  // Detect "Term: definition" or "Term — definition"
+  const cards = [];
+  const lines = text.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+  for(const line of lines){
+    const m = line.match(/^(.{2,60}?)\s*[:\-–]\s*(.{2,400})$/);
+    if(m){
+      cards.push({front: m[1].trim(), back: m[2].trim(), starred:false});
+    }
+  }
+  return cards;
+}
+
+function makeCardsFromTopics(topics, subjectType){
+  const cards = [];
+  for(const t of topics){
+    if(subjectType.startsWith("STEM")){
+      cards.push({
+        front: `When would you use: ${t}?`,
+        back: `Cue(s): \nAssumptions: \nCommon trap: `,
+        starred:false
+      });
+    } else if(subjectType.startsWith("Writing")){
+      cards.push({
+        front: `Build a paragraph for: ${t}`,
+        back: `Claim: \nEvidence/example: \nLink back: `,
+        starred:false
+      });
+    } else {
+      cards.push({
+        front: `Define: ${t}`,
+        back: `Definition: \nExample: \nRecognition cue: `,
+        starred:false
+      });
+    }
+  }
+  return cards;
+}
+
+/* ========= Grade parsing ========= */
+function tryParseWeightsFromText(text){
+  const weights = [];
+  const lines = text.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+  const re = /^([A-Za-z][A-Za-z0-9 &\/\-\(\)]{1,50})\s*[:\-–]\s*(\d{1,3})\s*%$/;
+  const re2 = /^([A-Za-z][A-Za-z0-9 &\/\-\(\)]{1,50})\s+(\d{1,3})\s*%$/;
+
+  for(const line of lines){
+    let m = line.match(re) || line.match(re2);
+    if(m){
+      const name = m[1].trim();
+      const pct = Number(m[2]);
+      if(pct >= 0 && pct <= 100) weights.push({name, pct});
+    }
+  }
+  const map = new Map();
+  for(const w of weights){
+    const key = w.name.toLowerCase();
+    if(!map.has(key)) map.set(key, w);
+  }
+  return Array.from(map.values()).slice(0, 12);
+}
+
+/* ========= Study session (kept minimal for now) ========= */
 function buildOneByOneQuestions(topics, subjectType, count){
-  const questions = [];
   const stemsReading = [
-    "Define {t} in one sentence. Then give a quick example.",
-    "What’s the main purpose of {t}? (Answer like a test key.)",
-    "What’s a common trap or misconception about {t}?",
-    "Explain {t} as if tutoring someone in 45 seconds.",
-    "How would you recognize {t} in a multiple-choice question?"
+    "Define {t}. Give one example.",
+    "What’s the purpose of {t}?",
+    "What’s a common trap with {t}?",
+    "Explain {t} in 45 seconds.",
+    "How do you recognize {t} on an exam?"
   ];
   const stemsSTEM = [
     "When would you use {t}? Name the cue.",
-    "For {t}, list 2 assumptions/conditions to check.",
-    "Set up (don’t fully solve) a problem where {t} is required.",
-    "Interpret the key parameter/result for {t} in context.",
-    "What would a diagnostic/red-flag issue look like for {t}?"
+    "For {t}, list 2 assumptions.",
+    "Set up a problem where {t} is required.",
+    "Interpret the key result for {t}.",
+    "What diagnostic issue would break {t}?"
   ];
   const stemsWriting = [
-    "What claim would you make about {t}? Provide one supporting point.",
-    "Rewrite an explanation of {t} more clearly (short + direct).",
-    "Give a counterargument for {t}, then respond to it.",
-    "Turn {t} into a 3-bullet mini-outline.",
-    "What evidence would strengthen a paragraph about {t}?"
+    "Write a claim about {t} and one supporting point.",
+    "Rewrite {t} more clearly (short).",
+    "Counterargument for {t}, then response.",
+    "Turn {t} into a 3-bullet outline.",
+    "What evidence strengthens {t}?"
   ];
   const stems = subjectType.startsWith("Reading") ? stemsReading
               : subjectType.startsWith("STEM") ? stemsSTEM
@@ -399,15 +664,14 @@ function buildOneByOneQuestions(topics, subjectType, count){
   const hint = buildHint(subjectType);
   const check = buildCheck();
 
+  const questions = [];
   for(let i=0;i<count;i++){
     const t = topics[i % topics.length] || "the topic";
-    const prompt = stems[i % stems.length].replace("{t}", t);
-    questions.push({topic:t, prompt, hint, check});
+    questions.push({topic:t, prompt: stems[i % stems.length].replace("{t}", t), hint, check});
   }
   return questions;
 }
 
-/* ========= Session generator ========= */
 function generateSession({energy, focus, time, subjectType, mode, preset, topics, toggles, course}){
   const lf = loadFactor(energy, focus, toggles);
   const total = Number(time);
@@ -415,110 +679,152 @@ function generateSession({energy, focus, time, subjectType, mode, preset, topics
   const remaining = clamp(total - ramp.rampMin, 12, total);
   const blocks = timePlan(remaining);
 
-  const maxTopics = clamp(Math.round((remaining/20) * (lf < 0.8 ? 2.5 : 3.5)), 2, 7);
-  const chosen = topics.length ? topics.slice(0, maxTopics) : ["Core concepts", "Practice problems", "Common traps"];
+  const chosen = topics.length ? topics.slice(0, clamp(Math.round(remaining/20 * 3), 2, 7))
+                              : ["Core concepts", "Practice", "Common traps"];
 
   const session = {
     meta: { energy, focus, subjectType, mode, preset, total, remaining, course: safeCourseLabel(course), lf },
-    ramp,
-    blocks,
-    plan: [],
-    active: [],
-    check: [],
-    wrap: [],
+    ramp, blocks,
+    plan: [], active: [], check: [], wrap: [],
     oneByOne: null
   };
 
-  session.plan.push(`Target topics (up to 4): ${chosen.slice(0,4).join(", ")}.`);
-  session.plan.push(`Define success: “I can answer without notes on 2–3 topics.”`);
-  session.plan.push(mode === "Finals Crunch"
-    ? `Use rotation: topic → 2 questions → 1 teach-back line → switch.`
-    : `Start with accuracy, then build speed if capacity allows.`);
+  session.plan.push(`Targets: ${chosen.slice(0,4).join(", ")}.`);
+  session.plan.push(`Goal: answer without notes on 2–3 topics.`);
 
   if(preset === "One-by-One Q&A"){
-    const qCount = clamp(Math.round((blocks.active + blocks.check) * (lf < 0.8 ? 0.35 : 0.5)), 8, 22);
+    const qCount = clamp(Math.round((blocks.active + blocks.check) * (lf < 0.8 ? 0.35 : 0.5)), 8, 24);
     const qs = buildOneByOneQuestions(chosen, subjectType, qCount);
-    session.active.push(`Work sequentially: answer → check → adjust. Avoid skipping ahead.`);
-    session.active.push(`Pace target: ~${Math.max(1, Math.round((blocks.active+blocks.check)/Math.max(1,qCount)))} min/question.`);
-    session.check.push(`Every 4 questions: summarize the rule in 1 sentence.`);
-    session.check.push(`Log 2 “tempting wrong answers” and the cue you’ll use next time.`);
-    session.wrap.push(`Write 2 rules: “If I see ___, I use ___ because ___.”`);
-    session.wrap.push(`Next session: redo the 3 hardest prompts without looking.`);
+    session.active.push("Work one prompt at a time. Check after each.");
+    session.check.push("Every 4 prompts: write the cue that distinguishes the correct choice.");
+    session.wrap.push("Close with 2 decision rules in exam-ready language.");
     session.oneByOne = {questions: qs, index: 0, answers: Array(qs.length).fill(""), showHint: false};
   } else {
-    session.active.push(`Preset scaffolded in MVP. For now, switch to One-by-One Q&A to practice.`);
-    session.check.push(`Identify the 2 concepts that caused hesitation; write the recognition cue.`);
-    session.wrap.push(`Set next session start cue: “Open at Topic X and do 3 prompts.”`);
+    session.active.push("MVP tip: use One-by-One Q&A for now. (Other presets can be expanded next.)");
+    session.check.push("Identify 2 weak areas and write the recognition cue.");
+    session.wrap.push("Set your next start point: topic + 3 prompts.");
   }
-
-  if(lf < 0.75){
-    session.plan.push(`Load adjustment: keep tasks small; prioritize completion over volume.`);
-    session.wrap.unshift(`Capacity note: stop while stable; leave a clear restart cue.`);
-  } else if(lf > 1.05){
-    session.check.push(`If alert: add a 5-minute speed round at the end (no notes).`);
-  }
-
   return session;
 }
 
-/* ========= UI State ========= */
+/* ========= App state ========= */
 let STATE = {
   tab: "study",
   session: null,
   notesText: "",
   syllabusText: "",
   gradeWeights: [],
+  deck: [],
+  deckIndex: 0,
+  showingBack: false,
+  deckShuffle: false,
+  deckOnlyStarred: false
 };
 
+/* ========= Tabs ========= */
 function setTab(tab){
   STATE.tab = tab;
   el("tabStudy").classList.toggle("active", tab === "study");
+  el("tabFlash").classList.toggle("active", tab === "flash");
   el("tabGrades").classList.toggle("active", tab === "grades");
+
   if(tab === "study") renderStudyIdle();
-  else renderGrades();
+  if(tab === "flash") renderFlashcardsHome();
+  if(tab === "grades") renderGrades();
 }
 
+el("tabStudy").onclick = ()=>setTab("study");
+el("tabFlash").onclick = ()=>setTab("flash");
+el("tabGrades").onclick = ()=>setTab("grades");
+
+/* ========= Notes upload ========= */
+async function readNotesFile(){
+  const file = el("notesFile").files?.[0];
+  if(!file){ alert("Upload a TXT/MD file first."); return null; }
+  return await file.text();
+}
+
+el("btnUseNotes").onclick = async ()=>{
+  const text = await readNotesFile(); if(text === null) return;
+  STATE.notesText = text;
+  const lines = text.split(/\n+/).map(l=>l.trim()).filter(Boolean).slice(0, 140);
+  el("topics").value = lines.map(l=>"- " + l.replace(/^[-•*]\s*/,'')).join("\n");
+  alert("Topics filled from notes. Edit as needed.");
+};
+
+el("btnAppendNotes").onclick = async ()=>{
+  const text = await readNotesFile(); if(text === null) return;
+  STATE.notesText = text;
+  const lines = text.split(/\n+/).map(l=>l.trim()).filter(Boolean).slice(0, 90);
+  const add = lines.map(l=>"- " + l.replace(/^[-•*]\s*/,'')).join("\n");
+  el("topics").value = (el("topics").value.trim() ? (el("topics").value.trim() + "\n") : "") + add;
+  alert("Notes appended to Topics.");
+};
+
+/* ========= Flashcard builder button ========= */
+el("btnMakeDeck").onclick = async ()=>{
+  const topics = parseTopics(el("topics").value);
+  const subjectType = el("subjectType").value;
+
+  // If notes contain term: definition lines, prioritize that
+  let cards = [];
+  if(STATE.notesText){
+    const parsed = parseCardsFromNotes(STATE.notesText);
+    if(parsed.length >= 6) cards = parsed;
+  }
+
+  if(cards.length === 0){
+    if(!topics.length){
+      alert("Add topics (or upload notes) first.");
+      return;
+    }
+    cards = makeCardsFromTopics(topics, subjectType);
+  }
+
+  STATE.deck = cards;
+  STATE.deckIndex = 0;
+  STATE.showingBack = false;
+  setTab("flash");
+};
+
+/* ========= Study ========= */
 function renderStudyIdle(){
   el("outTitle").textContent = "Study";
-  el("outSub").textContent = "Generate a session to begin.";
+  el("outSub").textContent = "Generate a session, then open flashcards for longer study blocks.";
   el("outBody").innerHTML = `
-    <div class="small">This MVP includes:</div>
-    <ul class="small">
-      <li><b>Flow Ramp</b> (Ignition → Bridge → Flow Entry)</li>
-      <li><b>Study Plan</b> (Plan → Active → Check → Wrap)</li>
-      <li><b>One-by-One Practice</b> for your midterm/finals loop</li>
-    </ul>
+    <div class="phase">
+      <h3>How to use this</h3>
+      <div class="meta">A long study block looks like: Session → Flashcards → Session → Flashcards.</div>
+      <ul>
+        <li>Generate a session (Flow Ramp + plan).</li>
+        <li>Convert topics into flashcards for repetition.</li>
+        <li>Star what you miss and cycle starred cards later.</li>
+      </ul>
+    </div>
   `;
 }
 
 function renderFlowRamp(session){
   el("outTitle").textContent = session.meta.course;
-  el("outSub").textContent = `Flow Ramp (${session.ramp.rampMin} min) → Study (${session.meta.remaining} min) • Preset: ${session.meta.preset}`;
-  const lf = session.meta.lf;
+  el("outSub").textContent = `Warm-up (${session.ramp.rampMin}m) → Study (${session.meta.remaining}m) • ${session.meta.preset}`;
 
-  let html = `
-    <div class="progress"><div id="progFill" style="width:35%"></div></div>
-    <div class="hint">Flow Ramp reduces task-switch cost and gets your brain online.</div>
-    <div class="divider"></div>
-  `;
+  let html = `<div class="progress"><div style="width:35%"></div></div>
+    <div class="hint">Warm-up phase for sustained focus.</div>
+    <div class="divider"></div>`;
+
   session.ramp.phases.forEach(p=>{
-    html += `
-      <div class="phase">
-        <h3>${p.title}</h3>
-        <div class="meta">Estimated time: ${p.minutes} min</div>
-        <ul>${p.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>
-      </div>
-    `;
+    html += `<div class="phase">
+      <h3>${p.title}</h3>
+      <div class="meta">${p.minutes} min</div>
+      <ul>${p.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>
+    </div>`;
   });
 
-  html += `
-    <div class="btnbar">
-      <button class="primary" id="btnStartStudy">Start Study Session</button>
-      <button id="btnAdjustLoad">Adjust Load</button>
-      <button id="btnShorten">Shorten Ramp</button>
-    </div>
-    <div class="small" style="margin-top:10px;">Load factor: <span class="kbd">${lf.toFixed(2)}</span></div>
-  `;
+  html += `<div class="btnbar">
+      <button class="primary" id="btnStartStudy">Begin Session</button>
+      <button id="btnAdjustLoad">Adjust Session</button>
+      <button id="btnShorten">Shorten Warm-up</button>
+    </div>`;
 
   el("outBody").innerHTML = html;
 
@@ -541,44 +847,51 @@ function renderFlowRamp(session){
 
 function renderStudyPlan(session){
   const {plan, active, check, wrap, blocks} = session;
-  el("outSub").textContent = `Study Plan (${session.meta.remaining} min): Plan ${blocks.plan} • Active ${blocks.active} • Check ${blocks.check} • Wrap ${blocks.wrap}`;
+  el("outSub").textContent = `Plan ${blocks.plan}m • Practice ${blocks.active}m • Check ${blocks.check}m • Wrap ${blocks.wrap}m`;
 
-  let html = `
-    <div class="progress"><div id="progFill" style="width:70%"></div></div>
-    <div class="hint">Capacity-aware: ${session.meta.energy} energy • ${session.meta.focus} focus</div>
+  let html = `<div class="progress"><div style="width:70%"></div></div>
     <div class="divider"></div>
 
     <div class="phase">
-      <h3>Plan (${blocks.plan} min)</h3>
+      <h3>Plan</h3>
       <ul>${plan.map(x=>`<li>${x}</li>`).join("")}</ul>
     </div>
 
     <div class="phase">
-      <h3>Active Practice (${blocks.active} min)</h3>
+      <h3>Practice</h3>
       <ul>${active.map(x=>`<li>${x}</li>`).join("")}</ul>
     </div>
 
     <div class="phase">
-      <h3>Check Understanding (${blocks.check} min)</h3>
+      <h3>Check</h3>
       <ul>${check.map(x=>`<li>${x}</li>`).join("")}</ul>
     </div>
 
     <div class="phase">
-      <h3>Wrap + Next Step (${blocks.wrap} min)</h3>
+      <h3>Wrap</h3>
       <ul>${wrap.map(x=>`<li>${x}</li>`).join("")}</ul>
     </div>
 
     <div class="btnbar">
-      ${session.oneByOne ? `<button class="primary" id="btnOneByOne">Open One-by-One Practice</button>` : ""}
-      <button id="btnBackToRamp">Back to Flow Ramp</button>
-      <button class="danger" id="btnNew">New Session</button>
-    </div>
-  `;
+      ${session.oneByOne ? `<button class="primary" id="btnOneByOne">Open One-by-One</button>` : ""}
+      <button id="btnDeckFromTopics">Make Flashcards</button>
+      <button id="btnBackToRamp">Back</button>
+    </div>`;
+
   el("outBody").innerHTML = html;
 
-  if(session.oneByOne) el("btnOneByOne").onclick = ()=>renderOneByOne(session);
+  if(session.oneByOne){
+    el("btnOneByOne").onclick = ()=>renderOneByOne(session);
+  }
   el("btnBackToRamp").onclick = ()=>renderFlowRamp(session);
-  el("btnNew").onclick = ()=>renderStudyIdle();
+  el("btnDeckFromTopics").onclick = ()=>{
+    const topics = parseTopics(el("topics").value);
+    if(!topics.length){ alert("Add topics first."); return; }
+    STATE.deck = makeCardsFromTopics(topics, session.meta.subjectType);
+    STATE.deckIndex = 0;
+    STATE.showingBack = false;
+    setTab("flash");
+  };
 }
 
 function renderOneByOne(session){
@@ -586,116 +899,290 @@ function renderOneByOne(session){
   const q = obo.questions[obo.index];
   const total = obo.questions.length;
 
-  el("outSub").textContent = `One-by-One Practice • ${obo.index+1} / ${total}`;
+  el("outSub").textContent = `One-by-One • ${obo.index+1}/${total}`;
 
-  let html = `
-    <div class="progress"><div id="progFill" style="width:${70 + Math.round((obo.index/(Math.max(1,total-1))) * 30)}%"></div></div>
+  el("outBody").innerHTML = `
+    <div class="progress"><div style="width:${70 + Math.round((obo.index/(Math.max(1,total-1))) * 30)}%"></div></div>
     <div class="divider"></div>
 
-    <div class="qcard">
-      <div class="qtop">
-        <div>
-          <div class="qtitle">One-by-One Q&A</div>
-          <div class="small" style="margin-top:4px;">Topic: <span class="kbd">${q.topic}</span></div>
-        </div>
-        <div class="badge">${session.meta.preset}</div>
-      </div>
+    <div class="phase">
+      <h3>Prompt</h3>
+      <div class="meta">Topic: <span class="kbd">${q.topic}</span></div>
+      <div style="font-size:18px">${q.prompt}</div>
 
       <div class="divider"></div>
-      <div style="font-size:13px; font-weight:650; letter-spacing:.15px;">Prompt</div>
-      <div class="small" style="margin-top:8px; white-space:pre-wrap;">${q.prompt}</div>
-
-      <div class="answerbox" style="margin-top:10px;">
-        <label for="ans">Your answer</label>
-        <textarea id="ans" placeholder="Write your answer here...">${obo.answers[obo.index] || ""}</textarea>
-      </div>
+      <label for="ans">Your answer</label>
+      <textarea id="ans" placeholder="Write your answer...">${obo.answers[obo.index] || ""}</textarea>
 
       <div class="btnbar">
         <button class="primary" id="btnCheck">Check</button>
-        <button id="btnToggleHint">${obo.showHint ? "Hide hint" : "Show hint"}</button>
-        <button id="btnAdjustLoad2">Adjust Load</button>
+        <button id="btnHint">${obo.showHint ? "Hide hint" : "Show hint"}</button>
+        <button id="btnAdjust2">Adjust Session</button>
       </div>
 
-      <div class="feedback" id="hintBox" style="${obo.showHint ? "" : "display:none"}"><b>Hint:</b> ${q.hint}</div>
-      <div class="feedback" id="checkBox" style="display:none;"></div>
+      <div class="hint" id="hintBox" style="${obo.showHint ? "" : "display:none"}">${q.hint}</div>
+      <div class="divider"></div>
+      <div class="small" id="checkBox" style="display:none;"></div>
 
       <div class="btnbar" style="margin-top:12px;">
         <button id="btnPrev">Prev</button>
         <button id="btnNext">Next</button>
-        <button id="btnExit">Exit to Plan</button>
+        <button id="btnExit">Exit</button>
       </div>
     </div>
-
-    <div class="small">Loop (your exam method): answer → check → write the cue → do one more example.</div>
   `;
 
-  el("outBody").innerHTML = html;
-
-  const saveAnswer = ()=>{ obo.answers[obo.index] = el("ans").value; };
+  const save = ()=>{ obo.answers[obo.index] = el("ans").value; };
 
   el("btnCheck").onclick = ()=>{
-    saveAnswer();
+    save();
     const box = el("checkBox");
     box.style.display = "block";
-    box.textContent = q.check + "\n\nSelf-check: What cue would help you recognize this faster under exam pressure?";
+    box.textContent = q.check;
   };
-
-  el("btnToggleHint").onclick = ()=>{ obo.showHint = !obo.showHint; renderOneByOne(session); };
-  el("btnAdjustLoad2").onclick = ()=>{
+  el("btnHint").onclick = ()=>{ obo.showHint = !obo.showHint; renderOneByOne(session); };
+  el("btnAdjust2").onclick = ()=>{
     obo.showHint = true;
-    obo.questions = obo.questions.map(item=>({ ...item, check: "Check: state the rule/cue in 1–2 lines. If incorrect, rewrite once using the distinguishing cue." }));
+    obo.questions = obo.questions.map(item=>({ ...item, check: "Check: 1–2 lines. Add the distinguishing cue. Rewrite once if needed." }));
     renderOneByOne(session);
   };
-
-  el("btnPrev").onclick = ()=>{ saveAnswer(); obo.index = Math.max(0, obo.index-1); renderOneByOne(session); };
-  el("btnNext").onclick = ()=>{ saveAnswer(); obo.index = Math.min(total-1, obo.index+1); renderOneByOne(session); };
-  el("btnExit").onclick = ()=>{ saveAnswer(); renderStudyPlan(session); };
+  el("btnPrev").onclick = ()=>{ save(); obo.index = Math.max(0, obo.index-1); renderOneByOne(session); };
+  el("btnNext").onclick = ()=>{ save(); obo.index = Math.min(total-1, obo.index+1); renderOneByOne(session); };
+  el("btnExit").onclick = ()=>{ save(); renderStudyPlan(session); };
 }
 
-/* ========= Grade Calculator ========= */
-/*
-  Reality check: parsing syllabi perfectly is hard without a real AI model.
-  MVP approach:
-  - Upload syllabus as TEXT
-  - We *attempt* to detect common weight patterns with regex
-  - Always allow manual edit
-*/
-function tryParseWeightsFromText(text){
-  const weights = [];
-  const lines = text.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+/* ========= Flashcards UI ========= */
+function deckView(){
+  let deck = STATE.deck || [];
+  if(STATE.deckOnlyStarred) deck = deck.filter(c=>c.starred);
 
-  // Patterns like: "Exams 40%" or "Quizzes - 10%" or "Homework: 15%"
-  const re = /^([A-Za-z][A-Za-z0-9 &\/\-\(\)]{1,50})\s*[:\-–]\s*(\d{1,3})\s*%$/;
-  const re2 = /^([A-Za-z][A-Za-z0-9 &\/\-\(\)]{1,50})\s+(\d{1,3})\s*%$/;
+  if(STATE.deckShuffle) deck = [...deck]; // order changes via shuffle action
+  return deck;
+}
 
-  for(const line of lines){
-    let m = line.match(re) || line.match(re2);
-    if(m){
-      const name = m[1].trim();
-      const pct = Number(m[2]);
-      if(pct >= 0 && pct <= 100) weights.push({name, pct});
+function shuffleDeck(){
+  const deck = STATE.deck;
+  for(let i=deck.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+}
+
+function renderFlashcardsHome(){
+  el("outTitle").textContent = "Flashcards";
+  const total = (STATE.deck || []).length;
+  el("outSub").textContent = total ? `${total} cards loaded` : "Create a deck from Topics or notes.";
+
+  const deck = deckView();
+  const hasDeck = deck.length > 0;
+
+  el("outBody").innerHTML = `
+    <div class="phase">
+      <h3>Deck controls</h3>
+      <div class="meta">Quizlet-style: click card to flip • star misses • study starred later</div>
+      <div class="btnbar">
+        <button class="primary" id="btnStartCards" ${hasDeck ? "" : "disabled"}>Start</button>
+        <button id="btnShuffle" ${hasDeck ? "" : "disabled"}>Shuffle</button>
+        <button id="btnStarOnly" ${hasDeck ? "" : "disabled"}>${STATE.deckOnlyStarred ? "All cards" : "Starred only"}</button>
+        <button id="btnClearDeck" class="danger" ${hasDeck ? "" : "disabled"}>Clear</button>
+      </div>
+      <div class="divider"></div>
+
+      <div class="editor">
+        <div class="small">Quick edit: fix cards that auto-generated awkwardly.</div>
+        <div class="miniGrid" style="margin-top:10px;">
+          <div>
+            <label>Front</label>
+            <textarea id="editFront" placeholder="Front of card..."></textarea>
+          </div>
+          <div>
+            <label>Back</label>
+            <textarea id="editBack" placeholder="Back of card..."></textarea>
+          </div>
+        </div>
+        <div class="btnbar">
+          <button id="btnAddCard">Add card</button>
+          <button id="btnSaveEdit" class="primary" ${hasDeck ? "" : "disabled"}>Save to current card</button>
+        </div>
+        <div class="hint">Tip: use “Term: definition” format in notes to auto-fill backs.</div>
+      </div>
+    </div>
+  `;
+
+  el("btnStartCards").onclick = ()=>renderFlashcardStage();
+  el("btnShuffle").onclick = ()=>{
+    shuffleDeck();
+    STATE.deckShuffle = true;
+    STATE.deckIndex = 0;
+    STATE.showingBack = false;
+    renderFlashcardsHome();
+  };
+  el("btnStarOnly").onclick = ()=>{
+    STATE.deckOnlyStarred = !STATE.deckOnlyStarred;
+    STATE.deckIndex = 0;
+    STATE.showingBack = false;
+    renderFlashcardsHome();
+  };
+  el("btnClearDeck").onclick = ()=>{
+    STATE.deck = [];
+    STATE.deckIndex = 0;
+    STATE.showingBack = false;
+    STATE.deckOnlyStarred = false;
+    STATE.deckShuffle = false;
+    renderFlashcardsHome();
+  };
+
+  el("btnAddCard").onclick = ()=>{
+    const f = (el("editFront").value || "").trim();
+    const b = (el("editBack").value || "").trim();
+    if(!f){ alert("Front is required."); return; }
+    STATE.deck.push({front:f, back:b || "(add your back)", starred:false});
+    el("editFront").value = "";
+    el("editBack").value = "";
+    renderFlashcardsHome();
+  };
+
+  el("btnSaveEdit").onclick = ()=>{
+    const deckAll = STATE.deck;
+    if(!deckAll.length) return;
+    const idx = clamp(STATE.deckIndex, 0, deckAll.length-1);
+    const f = (el("editFront").value || "").trim();
+    const b = (el("editBack").value || "").trim();
+    if(!f){ alert("Front is required."); return; }
+    deckAll[idx].front = f;
+    deckAll[idx].back = b;
+    renderFlashcardsHome();
+  };
+}
+
+function renderFlashcardStage(){
+  const deckAll = deckView();
+  if(deckAll.length === 0){
+    renderFlashcardsHome();
+    return;
+  }
+
+  // Map deckIndex to visible deck
+  STATE.deckIndex = clamp(STATE.deckIndex, 0, deckAll.length-1);
+  const card = deckAll[STATE.deckIndex];
+
+  el("outTitle").textContent = "Flashcards";
+  el("outSub").textContent = `Card ${STATE.deckIndex + 1} / ${deckAll.length}`;
+
+  const faceLabel = STATE.showingBack ? "Back" : "Front";
+  const text = STATE.showingBack ? (card.back || "") : (card.front || "");
+  const starClass = card.starred ? "star on" : "star";
+
+  el("outBody").innerHTML = `
+    <div class="cardStage">
+      <div class="flashWrap">
+        <div class="flashTop">
+          <div class="flashMeta">
+            <span class="chip">${faceLabel}</span>
+            ${STATE.deckOnlyStarred ? `<span class="chip">Starred filter</span>` : ``}
+            ${STATE.deckShuffle ? `<span class="chip">Shuffled</span>` : ``}
+          </div>
+          <button class="${starClass}" id="btnStar" title="Star this card">${card.starred ? "★" : "☆"}</button>
+        </div>
+
+        <div class="flashCard" id="flashCard" tabindex="0" role="button" aria-label="Flashcard. Click to flip.">
+          <div class="flashMain">
+            <div class="flashLabel">${faceLabel}</div>
+            <div class="flashText">${escapeHtml(text).replaceAll("\n","<br>")}</div>
+          </div>
+
+          <div class="flashFooter">
+            <div>Click / press <span class="kbd">Space</span> to flip</div>
+            <div>Use <span class="kbd">←</span> <span class="kbd">→</span></div>
+          </div>
+        </div>
+
+        <div class="flashControls">
+          <button id="btnPrev">Prev</button>
+          <button class="primary" id="btnFlip">Flip</button>
+          <button id="btnNext">Next</button>
+          <button id="btnEdit">Edit</button>
+          <button id="btnExit">Exit</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const flip = ()=>{
+    STATE.showingBack = !STATE.showingBack;
+    renderFlashcardStage();
+  };
+
+  el("btnFlip").onclick = flip;
+  el("flashCard").onclick = flip;
+
+  el("btnPrev").onclick = ()=>{
+    STATE.showingBack = false;
+    STATE.deckIndex = clamp(STATE.deckIndex - 1, 0, deckAll.length-1);
+    renderFlashcardStage();
+  };
+  el("btnNext").onclick = ()=>{
+    STATE.showingBack = false;
+    STATE.deckIndex = clamp(STATE.deckIndex + 1, 0, deckAll.length-1);
+    renderFlashcardStage();
+  };
+  el("btnExit").onclick = ()=>renderFlashcardsHome();
+
+  el("btnEdit").onclick = ()=>{
+    // edit current visible card: apply to the underlying deck by matching front/back
+    const all = STATE.deck;
+    const idx = all.findIndex(c => c.front === card.front && c.back === card.back);
+    if(idx >= 0){
+      // set base index to that card so Save works intuitively
+      STATE.deckIndex = idx;
     }
-  }
+    renderFlashcardsHome();
+    setTimeout(()=>{
+      el("editFront").value = card.front || "";
+      el("editBack").value = card.back || "";
+      el("editFront").focus();
+    }, 30);
+  };
 
-  // De-dupe by name
-  const map = new Map();
-  for(const w of weights){
-    const key = w.name.toLowerCase();
-    if(!map.has(key)) map.set(key, w);
-  }
-  return Array.from(map.values()).slice(0, 12);
+  el("btnStar").onclick = ()=>{
+    // toggle star on the actual object (card refers to object in STATE.deck in most cases)
+    card.starred = !card.starred;
+    renderFlashcardStage();
+  };
+
+  // Keyboard controls for long sessions
+  window.onkeydown = (e)=>{
+    if(STATE.tab !== "flash") return;
+    if(["Space","ArrowLeft","ArrowRight"].includes(e.code)) e.preventDefault();
+    if(e.code === "Space") flip();
+    if(e.code === "ArrowLeft") el("btnPrev")?.click();
+    if(e.code === "ArrowRight") el("btnNext")?.click();
+  };
 }
 
+function escapeHtml(str){
+  return String(str || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
+}
+
+/* ========= Grades ========= */
 function renderGrades(){
   el("outTitle").textContent = "Grade Calculator";
-  el("outSub").textContent = "Upload syllabus weights (TXT recommended) or enter manually.";
+  el("outSub").textContent = "Upload grading policy (TXT/MD) or enter weights manually.";
 
-  const weightsHtml = (STATE.gradeWeights.length ? STATE.gradeWeights : [{name:"", pct:""}])
-    .map((w, i)=>`
+  const weights = (STATE.gradeWeights.length ? STATE.gradeWeights : [{name:"", pct:""}]);
+
+  const rowsHtml = weights.map((w,i)=>`
+    <div class="phase">
+      <h3>Category ${i+1}</h3>
       <div class="row" style="margin-top:10px;">
         <div>
-          <label>Category</label>
-          <input type="text" id="wName_${i}" value="${(w.name ?? "").replaceAll('"','&quot;')}" placeholder="e.g., Exams" />
+          <label>Category name</label>
+          <input type="text" id="wName_${i}" value="${String(w.name ?? "").replaceAll('"','&quot;')}" placeholder="e.g., Exams" />
         </div>
         <div>
           <label>Weight (%)</label>
@@ -704,65 +1191,53 @@ function renderGrades(){
       </div>
       <div class="row" style="margin-top:10px;">
         <div>
-          <label>Current score (%) in this category</label>
+          <label>Current score (%)</label>
           <input type="number" id="sCur_${i}" placeholder="e.g., 88" min="0" max="100" />
         </div>
         <div>
-          <label>Target final course grade (%) (optional)</label>
+          <label>Target course grade (%) (optional)</label>
           <input type="number" id="target" placeholder="e.g., 90" min="0" max="100" />
         </div>
       </div>
-    `).join("");
+    </div>
+  `).join("");
 
   el("outBody").innerHTML = `
     <div class="phase">
-      <h3>Syllabus upload (TXT/MD)</h3>
-      <div class="meta">MVP: attempts to detect lines like “Exams 40%” or “Quizzes: 10%”. Always review.</div>
+      <h3>Syllabus upload</h3>
+      <div class="meta">Auto-detect lines like “Exams 40%”. Review after parsing.</div>
       <input id="syllabusFile" type="file" accept=".txt,.md,text/plain,text/markdown" />
       <div class="btnbar" style="margin-top:10px;">
-        <button id="btnParseSyllabus" class="primary">Auto-detect weights</button>
-        <button id="btnClearWeights">Clear</button>
+        <button class="primary" id="btnParseSyllabus">Auto-detect weights</button>
         <button id="btnAddRow">Add category</button>
+        <button class="danger" id="btnClearWeights">Clear</button>
       </div>
-      <div class="hint">If your syllabus is a PDF, export/copy the grading policy into a .txt file for best results on phone.</div>
+      <div class="hint">If your syllabus is a PDF, copy the grading policy into a TXT/MD file for best results.</div>
     </div>
 
-    <div class="phase">
-      <h3>Weights + current scores</h3>
-      <div class="meta">Enter weight and your current score in each category. The app calculates your weighted grade.</div>
-      ${weightsHtml}
-      <div class="btnbar" style="margin-top:12px;">
-        <button id="btnCalc" class="primary">Calculate</button>
-      </div>
-      <div class="feedback" id="gradeOut" style="display:none;"></div>
-    </div>
+    ${rowsHtml}
 
-    <div class="small">
-      Note: If a category has no current score yet, leave it blank; it will be excluded from the “current weighted average” and flagged.
+    <div class="btnbar">
+      <button class="primary" id="btnCalc">Calculate</button>
     </div>
+    <div class="phase" id="gradeOut" style="display:none;"></div>
   `;
 
   el("btnAddRow").onclick = ()=>{
     STATE.gradeWeights.push({name:"", pct:""});
     renderGrades();
   };
-
   el("btnClearWeights").onclick = ()=>{
     STATE.gradeWeights = [];
     renderGrades();
   };
-
   el("btnParseSyllabus").onclick = async ()=>{
     const file = el("syllabusFile").files?.[0];
-    if(!file){
-      alert("Upload a TXT/MD syllabus grading policy first.");
-      return;
-    }
+    if(!file){ alert("Upload a TXT/MD grading policy first."); return; }
     const text = await file.text();
-    STATE.syllabusText = text;
     const parsed = tryParseWeightsFromText(text);
     if(parsed.length === 0){
-      alert("No weight lines detected. Paste the grading breakdown into a TXT and try again, or enter manually.");
+      alert("No weight lines detected. Enter manually or adjust the TXT formatting (e.g., 'Exams 40%').");
       return;
     }
     STATE.gradeWeights = parsed;
@@ -770,36 +1245,33 @@ function renderGrades(){
   };
 
   el("btnCalc").onclick = ()=>{
-    // read rows
-    const rows = [];
     const n = STATE.gradeWeights.length ? STATE.gradeWeights.length : 1;
 
     let weightSum = 0;
     let usedWeightSum = 0;
-    let weightedScoreSum = 0;
-    const missingScores = [];
+    let weightedEarned = 0;
+    const missing = [];
 
     for(let i=0;i<n;i++){
       const name = (el(`wName_${i}`)?.value || "").trim();
       const pct = Number(el(`wPct_${i}`)?.value);
-      const cur = el(`sCur_${i}`)?.value;
-      const curNum = cur === "" ? null : Number(cur);
+      const curVal = el(`sCur_${i}`)?.value;
+      const cur = curVal === "" ? null : Number(curVal);
 
-      if(!name && (!pct || isNaN(pct))) continue;
+      if(!name && (isNaN(pct) || pct === 0)) continue;
       if(isNaN(pct) || pct < 0 || pct > 100){
-        alert(`Invalid weight at row ${i+1}.`);
+        alert(`Invalid weight at category ${i+1}.`);
         return;
       }
+
       weightSum += pct;
 
-      if(curNum === null || isNaN(curNum)){
-        missingScores.push(name || `Row ${i+1}`);
+      if(cur === null || isNaN(cur)){
+        missing.push(name || `Category ${i+1}`);
       } else {
         usedWeightSum += pct;
-        weightedScoreSum += (curNum * (pct/100));
+        weightedEarned += cur * (pct/100);
       }
-
-      rows.push({name, pct, cur: curNum});
     }
 
     const out = el("gradeOut");
@@ -807,79 +1279,41 @@ function renderGrades(){
 
     const warnings = [];
     if(weightSum > 100.5 || weightSum < 99.5){
-      warnings.push(`Weights sum to ${weightSum.toFixed(1)}%. (Many syllabi sum to 100%. If yours doesn’t, that’s okay—just confirm.)`);
+      warnings.push(`Weights sum to ${weightSum.toFixed(1)}%. Confirm with your syllabus.`);
     }
-    if(missingScores.length){
-      warnings.push(`Missing current scores for: ${missingScores.join(", ")}.`);
-    }
-
-    const currentWeighted = usedWeightSum > 0 ? (weightedScoreSum / (usedWeightSum/100)) : null;
+    if(missing.length) warnings.push(`Missing current scores: ${missing.join(", ")}.`);
 
     let msg = "";
+    const currentWeighted = usedWeightSum > 0 ? (weightedEarned / (usedWeightSum/100)) : null;
+
     if(currentWeighted === null){
-      msg += "No category scores entered yet. Add at least one current score to calculate.\n";
+      msg += `<h3>Result</h3><div class="meta">Add at least one current score.</div>`;
     } else {
-      msg += `Current weighted average (across categories with scores): ${currentWeighted.toFixed(2)}%\n`;
-      msg += `Coverage: ${usedWeightSum.toFixed(1)}% of total weight has scores entered.\n`;
+      msg += `<h3>Result</h3>
+              <div class="meta">Coverage: ${usedWeightSum.toFixed(1)}% of weights entered</div>
+              <div style="font-size:20px; margin-top:6px;"><b>Current weighted average:</b> ${currentWeighted.toFixed(2)}%</div>`;
     }
 
     const targetVal = el("target")?.value;
     const target = targetVal === "" ? null : Number(targetVal);
-    if(target !== null && !isNaN(target)){
-      // Simple “needed average on remaining weight” estimate
+    if(target !== null && !isNaN(target) && currentWeighted !== null){
       const remainingW = Math.max(0, 100 - usedWeightSum);
-      if(remainingW === 0){
-        msg += `Target: ${target.toFixed(1)}%. All weights already have scores entered.\n`;
-      } else if(currentWeighted !== null){
-        const earned = weightedScoreSum; // points earned out of usedWeightSum
-        const neededTotal = target; // percent target overall
-        // Let x be average needed on remaining categories:
-        // earned + x*(remainingW/100) = neededTotal
-        const x = (neededTotal - earned) / (remainingW/100);
-        msg += `To finish with ${target.toFixed(1)}%, you’d need an average of ~${x.toFixed(2)}% across the remaining ${remainingW.toFixed(1)}% weight.\n`;
+      if(remainingW > 0){
+        const x = (target - weightedEarned) / (remainingW/100);
+        msg += `<div class="divider"></div>
+                <div><b>To finish with ${target.toFixed(1)}%:</b> need ~${x.toFixed(2)}% average on remaining ${remainingW.toFixed(1)}% weight.</div>`;
       }
     }
 
     if(warnings.length){
-      msg += "\nNotes:\n- " + warnings.join("\n- ");
+      msg += `<div class="divider"></div><div class="small">Notes:<br>• ${warnings.join("<br>• ")}</div>`;
     }
 
-    out.textContent = msg;
+    out.innerHTML = msg;
   };
 }
 
-/* ========= Notes upload ========= */
-async function readNotesFile(){
-  const file = el("notesFile").files?.[0];
-  if(!file){
-    alert("Upload a TXT/MD notes file first.");
-    return null;
-  }
-  return await file.text();
-}
-
-el("btnUseNotes").onclick = async ()=>{
-  const text = await readNotesFile();
-  if(text === null) return;
-  STATE.notesText = text;
-  // Convert raw notes into topic-like lines (simple heuristic)
-  // Here we keep it simple: first 120 lines, trimmed
-  const lines = text.split(/\n+/).map(l=>l.trim()).filter(Boolean).slice(0, 120);
-  el("topics").value = lines.map(l=>"- " + l.replace(/^[-•*]\s*/,'')).join("\n");
-  alert("Topics filled from your uploaded notes (first ~120 lines). You can edit them before generating.");
-};
-
-el("btnAppendNotes").onclick = async ()=>{
-  const text = await readNotesFile();
-  if(text === null) return;
-  STATE.notesText = text;
-  const lines = text.split(/\n+/).map(l=>l.trim()).filter(Boolean).slice(0, 80);
-  const add = lines.map(l=>"- " + l.replace(/^[-•*]\s*/,'')).join("\n");
-  el("topics").value = (el("topics").value.trim() ? (el("topics").value.trim() + "\n") : "") + add;
-  alert("Notes appended to Topics. You can delete anything you don’t want.");
-};
-
-/* ========= Wire up Study generation ========= */
+/* ========= Wiring ========= */
 el("btnGenerate").onclick = ()=>{
   const energy = el("energy").value;
   const focus = el("focus").value;
@@ -889,13 +1323,12 @@ el("btnGenerate").onclick = ()=>{
   const preset = el("preset").value;
   const course = el("course").value;
 
-  const toggles = {
-    brainfog: el("tBrainfog").checked
-  };
-
+  const toggles = { brainfog: el("tBrainfog").checked };
   const topics = parseTopics(el("topics").value);
+
   const session = generateSession({energy, focus, time, subjectType, mode, preset, topics, toggles, course});
   STATE.session = session;
+  setTab("study");
   renderFlowRamp(session);
 };
 
@@ -909,12 +1342,7 @@ el("btnReset").onclick = ()=>{
   el("mode").value = "Midterm Review";
   el("preset").value = "One-by-One Q&A";
   el("tBrainfog").checked = false;
-  el("tNausea").checked = false;
 };
-
-/* ========= Tabs ========= */
-el("tabStudy").onclick = ()=>setTab("study");
-el("tabGrades").onclick = ()=>setTab("grades");
 
 /* init */
 renderStudyIdle();
