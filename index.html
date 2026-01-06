@@ -9,25 +9,20 @@
     :root{
       --bg: #0b0f14;
       --panel: #0f1621;
-      --panel2:#0e141d;
       --text:#e9eef6;
       --muted:#a7b3c6;
       --soft:#7f8aa1;
-      --accent:#78c6b0; /* sage-ish */
-      --accent2:#78a6ff; /* muted blue */
+      --accent:#78c6b0;
+      --accent2:#78a6ff;
       --border: rgba(255,255,255,.08);
       --shadow: 0 12px 40px rgba(0,0,0,.35);
       --radius: 16px;
-      --radius2: 12px;
       --focus: 0 0 0 3px rgba(120,198,176,.25);
       --danger:#ff6b6b;
-      --ok:#78c6b0;
-      --warn:#ffd166;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
       margin:0;
       font-family: var(--sans);
@@ -37,245 +32,70 @@
       color: var(--text);
       line-height:1.35;
     }
-    a{color:inherit}
-    .wrap{
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 28px 18px 56px;
+    .wrap{max-width: 1020px; margin:0 auto; padding: 28px 18px 56px;}
+    .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px;}
+    .brand{display:flex; align-items:center; gap:12px;}
+    .logo{width:40px;height:40px;border-radius:14px;background: linear-gradient(135deg, rgba(120,198,176,.95), rgba(120,166,255,.85));box-shadow: var(--shadow);}
+    h1{font-size:18px; margin:0; letter-spacing:.2px;}
+    .tag{font-size:12px; color: var(--muted); margin-top:2px;}
+    .pillbar{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+    .pill{font-size:12px;padding:8px 10px;border:1px solid var(--border);border-radius:999px;color: var(--muted);background: rgba(255,255,255,.02);}
+    .grid{display:grid; grid-template-columns: 1.15fr .85fr; gap: 14px;}
+    @media (max-width: 900px){ .grid{grid-template-columns: 1fr;} .pillbar{justify-content:flex-start} }
+    .card{background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow:hidden;}
+    .card .head{padding: 16px 16px 10px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,.12);
+      display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+    .card .head h2{margin:0; font-size:14px; letter-spacing:.2px;}
+    .card .head .sub{margin-top:4px; font-size:12px; color: var(--muted);}
+    .card .body{padding: 16px;}
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap: 10px;}
+    @media (max-width: 520px){ .row{grid-template-columns:1fr} }
+    label{font-size:12px; color: var(--muted); display:block; margin-bottom:6px;}
+    select, textarea, input[type="text"], input[type="number"]{
+      width:100%; padding: 12px 12px; border-radius: 12px; border: 1px solid var(--border);
+      background: rgba(10,14,20,.65); color: var(--text); outline:none;
     }
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:18px;
-    }
-    .brand{
-      display:flex; align-items:center; gap:12px;
-    }
-    .logo{
-      width:40px;height:40px;border-radius:14px;
-      background: linear-gradient(135deg, rgba(120,198,176,.95), rgba(120,166,255,.85));
-      box-shadow: var(--shadow);
-    }
-    h1{
-      font-size:18px; margin:0;
-      letter-spacing:.2px;
-    }
-    .tag{
-      font-size:12px;
-      color: var(--muted);
-      margin-top:2px;
-    }
-    .pillbar{
-      display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;
-    }
-    .pill{
-      font-size:12px;
-      padding:8px 10px;
-      border:1px solid var(--border);
-      border-radius:999px;
-      color: var(--muted);
-      background: rgba(255,255,255,.02);
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 14px;
-    }
-    @media (max-width: 900px){
-      .grid{grid-template-columns: 1fr;}
-      .pillbar{justify-content:flex-start}
-    }
-
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .card .head{
-      padding: 16px 16px 10px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(0,0,0,.12);
-      display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
-    }
-    .card .head h2{
-      margin:0;
-      font-size:14px;
-      letter-spacing:.2px;
-    }
-    .card .head .sub{
-      margin-top:4px;
-      font-size:12px; color: var(--muted);
-    }
-    .card .body{
-      padding: 16px;
-    }
-
-    .row{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    @media (max-width: 520px){
-      .row{grid-template-columns:1fr}
-    }
-    label{
-      font-size:12px;
-      color: var(--muted);
-      display:block;
-      margin-bottom:6px;
-    }
-    select, textarea, input[type="text"]{
-      width:100%;
-      padding: 12px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(10,14,20,.65);
-      color: var(--text);
-      outline:none;
-    }
-    select:focus, textarea:focus, input[type="text"]:focus{ box-shadow: var(--focus); border-color: rgba(120,198,176,.35); }
+    select:focus, textarea:focus, input:focus{ box-shadow: var(--focus); border-color: rgba(120,198,176,.35); }
     textarea{ min-height: 120px; resize: vertical; }
-    .toggles{
-      display:flex; flex-wrap:wrap; gap:10px;
-      margin-top: 8px;
-    }
-    .toggle{
-      display:flex; align-items:center; gap:8px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.02);
-      padding: 10px 10px;
-      border-radius: 12px;
-      color: var(--muted);
-      font-size: 12px;
-      user-select:none;
-    }
+    .toggles{display:flex; flex-wrap:wrap; gap:10px; margin-top: 8px;}
+    .toggle{display:flex; align-items:center; gap:8px; border:1px solid var(--border); background: rgba(255,255,255,.02);
+      padding: 10px 10px; border-radius: 12px; color: var(--muted); font-size: 12px; user-select:none;}
     .toggle input{ accent-color: var(--accent); }
-
-    .btnbar{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin-top: 12px;
-    }
+    .btnbar{display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px;}
     button{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.03);
-      color: var(--text);
-      padding: 11px 12px;
-      border-radius: 12px;
-      cursor:pointer;
-      font-weight: 600;
-      font-size: 13px;
-      letter-spacing:.15px;
+      border: 1px solid var(--border); background: rgba(255,255,255,.03); color: var(--text);
+      padding: 11px 12px; border-radius: 12px; cursor:pointer; font-weight: 600; font-size: 13px; letter-spacing:.15px;
     }
     button:hover{ border-color: rgba(255,255,255,.18); }
     button:focus{ outline:none; box-shadow: var(--focus); }
-    .primary{
-      background: linear-gradient(135deg, rgba(120,198,176,.92), rgba(120,166,255,.72));
-      border-color: rgba(120,198,176,.35);
-      color: #071017;
-    }
-    .ghost{
-      background: transparent;
-    }
-    .danger{
-      border-color: rgba(255,107,107,.35);
-      background: rgba(255,107,107,.08);
-    }
-
-    .progress{
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      overflow:hidden;
-      border: 1px solid var(--border);
-    }
-    .progress > div{
-      height:100%;
-      width:0%;
-      background: linear-gradient(90deg, rgba(120,198,176,.95), rgba(120,166,255,.80));
-    }
-
-    .phase{
-      padding: 14px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,.18);
-      margin-bottom: 12px;
-    }
-    .phase h3{
-      margin:0 0 6px 0;
-      font-size: 13px;
-      letter-spacing:.2px;
-    }
-    .phase .meta{
-      font-size:12px; color: var(--muted);
-      margin-bottom: 10px;
-    }
-    .phase ul{ margin: 0; padding-left: 18px; color: var(--text); }
+    .primary{background: linear-gradient(135deg, rgba(120,198,176,.92), rgba(120,166,255,.72));
+      border-color: rgba(120,198,176,.35); color: #071017;}
+    .danger{border-color: rgba(255,107,107,.35); background: rgba(255,107,107,.08);}
+    .small{font-size: 12px; color: var(--muted);}
+    .hint{font-size: 12px; color: var(--soft); margin-top:8px;}
+    .divider{ height:1px; background: var(--border); margin: 14px 0; }
+    .progress{height: 10px; border-radius: 999px; background: rgba(255,255,255,.06); overflow:hidden; border: 1px solid var(--border);}
+    .progress > div{height:100%; width:0%; background: linear-gradient(90deg, rgba(120,198,176,.95), rgba(120,166,255,.80));}
+    .phase{padding: 14px; border-radius: 14px; border: 1px solid var(--border); background: rgba(0,0,0,.18); margin-bottom: 12px;}
+    .phase h3{margin:0 0 6px 0; font-size: 13px; letter-spacing:.2px;}
+    .phase .meta{font-size:12px; color: var(--muted); margin-bottom: 10px;}
+    .phase ul{ margin: 0; padding-left: 18px; }
     .phase li{ margin: 6px 0; color: rgba(233,238,246,.95); }
 
-    .kbd{
-      font-family: var(--mono);
-      font-size: 12px;
-      border:1px solid var(--border);
-      padding: 2px 6px;
-      border-radius: 8px;
-      color: var(--muted);
-      background: rgba(255,255,255,.03);
-    }
-
-    .small{
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .hint{
-      font-size: 12px;
-      color: var(--soft);
-      margin-top:8px;
-    }
-
-    .divider{ height:1px; background: var(--border); margin: 14px 0; }
-
-    .qcard{
-      border:1px solid var(--border);
-      border-radius: 14px;
-      background: rgba(0,0,0,.18);
-      padding: 14px;
-      margin-bottom: 12px;
-    }
+    .qcard{border:1px solid var(--border); border-radius: 14px; background: rgba(0,0,0,.18); padding: 14px; margin-bottom: 12px;}
     .qtop{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
     .qtitle{ font-weight:700; font-size: 13px; margin:0; }
-    .badge{
-      font-size: 11px;
-      color: #071017;
-      background: linear-gradient(135deg, rgba(120,198,176,.95), rgba(120,166,255,.75));
-      padding: 5px 9px;
-      border-radius: 999px;
-      font-weight: 800;
-      letter-spacing:.15px;
-    }
-    .answerbox{ margin-top:10px; }
-    .answerbox textarea{ min-height: 90px; }
-    .feedback{
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.02);
-      color: rgba(233,238,246,.92);
-      font-size: 12.5px;
-      white-space: pre-wrap;
-    }
+    .badge{font-size: 11px; color: #071017; background: linear-gradient(135deg, rgba(120,198,176,.95), rgba(120,166,255,.75));
+      padding: 5px 9px; border-radius: 999px; font-weight: 800; letter-spacing:.15px;}
+    .feedback{margin-top: 10px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border);
+      background: rgba(255,255,255,.02); color: rgba(233,238,246,.92); font-size: 12.5px; white-space: pre-wrap;}
+    .kbd{font-family: var(--mono); font-size: 12px; border:1px solid var(--border); padding: 2px 6px; border-radius: 8px;
+      color: var(--muted); background: rgba(255,255,255,.03);}
 
-    .footer{
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 12px;
-    }
+    .tabs{display:flex; gap:8px; flex-wrap:wrap;}
+    .tabbtn{padding:9px 10px; border-radius: 999px;}
+    .tabbtn.active{border-color: rgba(120,198,176,.35); background: rgba(120,198,176,.10);}
   </style>
 </head>
 <body>
@@ -285,20 +105,20 @@
         <div class="logo" aria-hidden="true"></div>
         <div>
           <h1>Flow Ramp Study</h1>
-          <div class="tag">Condition-aware study sessions • Flow Ramp → Active practice → Check → Wrap</div>
+          <div class="tag">Flow Ramp → Session plan → Practice • Notes upload • Grade calculator</div>
         </div>
       </div>
       <div class="pillbar">
         <div class="pill">No login</div>
-        <div class="pill">Mobile-first</div>
+        <div class="pill">Phone-friendly</div>
         <div class="pill">Neutral tone</div>
         <div class="pill">Adjust Load</div>
       </div>
     </div>
 
     <div class="grid">
-      <!-- LEFT: Builder -->
-      <div class="card" id="cardBuilder">
+      <!-- LEFT -->
+      <div class="card">
         <div class="head">
           <div>
             <h2>Session Builder</h2>
@@ -353,7 +173,7 @@
               <select id="mode">
                 <option selected>Midterm Review</option>
                 <option>Finals Crunch</option>
-                <option>Homework </option>
+                <option>Homework / Lab</option>
               </select>
             </div>
             <div>
@@ -371,14 +191,25 @@
 
           <div class="row" style="margin-top:10px;">
             <div>
-              <label for="course">Course / topic label (optional)</label>
+              <label for="course">Course / label (optional)</label>
               <input id="course" type="text" placeholder="e.g., QTM 100 — Inference & Regression" />
             </div>
             <div>
               <label>Condition toggles (optional)</label>
               <div class="toggles">
                 <label class="toggle"><input type="checkbox" id="tBrainfog"> Brain fog</label>
+                <label class="toggle"><input type="checkbox" id="tNausea"> Nausea day</label>
               </div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label for="notesFile">Upload notes (TXT/MD) → auto-fill Topics</label>
+            <input id="notesFile" type="file" accept=".txt,.md,text/plain,text/markdown" />
+            <div class="hint">Best on phone: export notes as .txt and upload here. This stays in your browser (no server).</div>
+            <div class="btnbar" style="margin-top:8px;">
+              <button id="btnUseNotes">Use uploaded notes as Topics</button>
+              <button id="btnAppendNotes">Append notes to Topics</button>
             </div>
           </div>
 
@@ -386,50 +217,46 @@
             <label for="topics">Topics (paste bullets / headings / messy notes)</label>
             <textarea id="topics" placeholder="Example:
 - z test vs t test
-- chi-square test of association
+- chi-square association
 - ANOVA + post hoc
-- regression slope/intercept interpretation
+- regression slope/intercept
 - assumptions + residual plots"></textarea>
-            <div class="hint">Tip: you can paste exam review topics. The app will generate warm-up + practice items from them.</div>
+            <div class="hint">Tip: paste your review sheet headings. The app will generate warm-up + practice items from them.</div>
           </div>
 
           <div class="btnbar">
             <button class="primary" id="btnGenerate">Generate Session</button>
-            <button class="ghost" id="btnReset">Reset</button>
+            <button id="btnReset">Reset</button>
           </div>
 
-          <div class="footer">
-            This MVP is an academic support tool.
+          <div class="small" style="margin-top:10px;">
+            Academic support tool only. No medical advice/diagnosis.
           </div>
         </div>
       </div>
 
-      <!-- RIGHT: Output / Flow Ramp / Study -->
-      <div class="card" id="cardOutput">
+      <!-- RIGHT -->
+      <div class="card">
         <div class="head">
           <div>
             <h2 id="outTitle">Output</h2>
-            <div class="sub" id="outSub">Generate a session to begin.</div>
+            <div class="sub" id="outSub">Generate a session or use the Grade Calculator tab.</div>
           </div>
-          <div class="small"><span class="kbd" id="stagePill">Idle</span></div>
+          <div class="tabs">
+            <button class="tabbtn active" id="tabStudy">Study</button>
+            <button class="tabbtn" id="tabGrades">Grades</button>
+          </div>
         </div>
-        <div class="body" id="outBody">
-          <div class="small">You’ll see:</div>
-          <ul class="small">
-            <li><b>Flow Ramp</b> (Phase 1 → 2 → Flow Entry)</li>
-            <li><b>Study Session</b> (Plan → Active Practice → Check → Wrap)</li>
-            <li><b>One-by-One Q&A</b> mode for sequential practice (if selected)</li>
-          </ul>
-        </div>
+        <div class="body" id="outBody"></div>
       </div>
     </div>
   </div>
 
 <script>
-/** =========================
- *  UTILITIES
- *  ========================= */
-function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+/* ========= Helpers ========= */
+function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
+function el(id){ return document.getElementById(id); }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
 function parseTopics(raw){
   const lines = raw.split(/\n+/).map(s=>s.trim()).filter(Boolean);
@@ -437,21 +264,34 @@ function parseTopics(raw){
   for(const l of lines){
     const x = l.replace(/^[-•*]\s*/,'').trim();
     if(!x) continue;
-    // split on semicolons / commas if user pasted a run-on
     const parts = x.split(/;|\s+\|\s+|•/).map(p=>p.trim()).filter(Boolean);
     for(const p of parts){
       if(p.length >= 2) cleaned.push(p);
     }
   }
-  // de-dupe
   return [...new Set(cleaned)];
 }
 
-function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function loadFactor(energy, focus, toggles){
+  let f = 1.0;
+  if(energy === "Low") f -= 0.22;
+  if(energy === "High") f += 0.10;
+  if(focus === "Foggy") f -= 0.20;
+  if(focus === "Alert") f += 0.08;
+  if(toggles.brainfog) f -= 0.10;
+  if(toggles.nausea) f -= 0.06;
+  return clamp(f, 0.55, 1.15);
+}
+
+function estRampMinutes(energy, focus, lf){
+  let base = 10;
+  if(energy === "Low" || focus === "Foggy") base = 12;
+  if(energy === "High" && focus === "Alert") base = 7;
+  const adj = lf < 0.75 ? 2 : (lf > 1.05 ? -1 : 0);
+  return clamp(base + adj, 5, 15);
+}
 
 function timePlan(total){
-  // returns typical allocation for Plan / Active / Check / Wrap
-  // bias toward active practice
   const plan = clamp(Math.round(total*0.12), 3, 12);
   const wrap = clamp(Math.round(total*0.10), 3, 12);
   const check = clamp(Math.round(total*0.20), 5, 25);
@@ -459,68 +299,29 @@ function timePlan(total){
   return {plan, active, check, wrap};
 }
 
-function loadFactor(energy, focus, toggles){
-  // lower = lighter load
-  let f = 1.0;
-  if(energy === "Low") f -= 0.22;
-  if(energy === "High") f += 0.10;
-  if(focus === "Foggy") f -= 0.20;
-  if(focus === "Alert") f += 0.08;
-  if(toggles.brainfog) f -= 0.10;
-  if(toggles.pain) f -= 0.08;
-  if(toggles.nausea) f -= 0.06;
-  return clamp(f, 0.55, 1.15);
-}
-
-function estRampMinutes(energy, focus, lf){
-  // adaptive ramp length
-  let base = 10;
-  if(energy === "Low" || focus === "Foggy") base = 12;
-  if(energy === "High" && focus === "Alert") base = 7;
-  // load factor: lower -> slightly longer ramp, but not huge
-  const adj = lf < 0.75 ? 2 : (lf > 1.05 ? -1 : 0);
-  return clamp(base + adj, 5, 15);
-}
-
 function safeCourseLabel(course){
   const c = (course||"").trim();
   return c ? c : "Your session";
 }
 
-/** =========================
- *  FLOW RAMP GENERATION
- *  ========================= */
+/* ========= Flow Ramp ========= */
 function buildFlowRamp({energy, focus, subjectType, lf}){
   const rampMin = estRampMinutes(energy, focus, lf);
 
-  const ignition = {
-    title: "Phase 1 — Cognitive Ignition",
-    minutes: clamp(Math.round(rampMin*0.30), 2, 5),
-    bullets: []
-  };
-  const bridge = {
-    title: "Phase 2 — Engagement Bridge",
-    minutes: clamp(Math.round(rampMin*0.55), 4, 10),
-    bullets: []
-  };
-  const entry = {
-    title: "Flow Entry",
-    minutes: clamp(rampMin - ignition.minutes - bridge.minutes, 0, 4),
-    bullets: []
-  };
+  const ignition = { title:"Phase 1 — Cognitive Ignition", minutes: clamp(Math.round(rampMin*0.30),2,5), bullets:[] };
+  const bridge  = { title:"Phase 2 — Engagement Bridge", minutes: clamp(Math.round(rampMin*0.55),4,10), bullets:[] };
+  const entry   = { title:"Flow Entry", minutes: clamp(rampMin - ignition.minutes - bridge.minutes,0,4), bullets:[] };
 
   if(subjectType.startsWith("Reading")){
     ignition.bullets = [
       "Skim headings and bold terms. Don’t memorize—just orient.",
-      "Mark 3 concepts that feel central (no deep notes yet)."
+      "Mark 3 central concepts (no deep notes yet)."
     ];
     bridge.bullets = [
-      "Write a 2–3 sentence summary of one key concept in your own words.",
+      "Write a 2–3 sentence summary of one concept in your own words.",
       "Answer 1 easy question: “What is this concept trying to explain?”"
     ];
-    entry.bullets = [
-      "Choose one main topic. Begin active recall or practice questions."
-    ];
+    entry.bullets = ["Choose one main topic. Begin active recall or practice questions."];
   } else if(subjectType.startsWith("STEM")){
     ignition.bullets = [
       "Scan formulas/steps for today’s topic. Identify the ‘type’ of problem.",
@@ -530,10 +331,8 @@ function buildFlowRamp({energy, focus, subjectType, lf}){
       "Do 1 medium problem slowly, labeling each step and why it’s used.",
       "Then do 1 shorter problem with fewer notes."
     ];
-    entry.bullets = [
-      "Start your main practice set. Aim for steady, not rushed."
-    ];
-  } else { // Writing
+    entry.bullets = ["Start your main practice set. Aim for steady accuracy first."];
+  } else {
     ignition.bullets = [
       "Re-read your last paragraph or outline. Highlight the main claim.",
       "List 3 points you want to argue/explain (no full sentences yet)."
@@ -542,36 +341,83 @@ function buildFlowRamp({energy, focus, subjectType, lf}){
       "Draft 6–8 bullet lines for one paragraph (claim → evidence → link).",
       "Rewrite one sentence for clarity (short + direct)."
     ];
-    entry.bullets = [
-      "Begin drafting your main section. Keep momentum."
-    ];
+    entry.bullets = ["Begin drafting your main section. Keep momentum."];
   }
 
-  // Adjust load: if low factor, remove one bullet from each phase
   if(lf < 0.75){
     ignition.bullets = ignition.bullets.slice(0,1);
     bridge.bullets = bridge.bullets.slice(0,1);
   }
   if(lf > 1.05){
-    // add one optional bullet
     bridge.bullets.push("Optional: teach the concept out loud in 30–60 seconds.");
   }
 
   return {rampMin, phases:[ignition, bridge, entry]};
 }
 
-/** =========================
- *  STUDY SESSION GENERATION
- *  ========================= */
+/* ========= Study content generators ========= */
+function buildHint(subjectType){
+  if(subjectType.startsWith("STEM")){
+    return "Anchor on: variable types, number of groups, independent vs paired, and whether the goal is estimate/compare/associate.";
+  }
+  if(subjectType.startsWith("Writing")){
+    return "Use a tight structure: claim → evidence/example → link back to the prompt.";
+  }
+  return "Answer like a key: definition + one example + one recognition cue.";
+}
+
+function buildCheck(){
+  return "Check: Is it specific, correct, and test-ready? Add one cue that helps you recognize it under exam pressure.";
+}
+
+function buildOneByOneQuestions(topics, subjectType, count){
+  const questions = [];
+  const stemsReading = [
+    "Define {t} in one sentence. Then give a quick example.",
+    "What’s the main purpose of {t}? (Answer like a test key.)",
+    "What’s a common trap or misconception about {t}?",
+    "Explain {t} as if tutoring someone in 45 seconds.",
+    "How would you recognize {t} in a multiple-choice question?"
+  ];
+  const stemsSTEM = [
+    "When would you use {t}? Name the cue.",
+    "For {t}, list 2 assumptions/conditions to check.",
+    "Set up (don’t fully solve) a problem where {t} is required.",
+    "Interpret the key parameter/result for {t} in context.",
+    "What would a diagnostic/red-flag issue look like for {t}?"
+  ];
+  const stemsWriting = [
+    "What claim would you make about {t}? Provide one supporting point.",
+    "Rewrite an explanation of {t} more clearly (short + direct).",
+    "Give a counterargument for {t}, then respond to it.",
+    "Turn {t} into a 3-bullet mini-outline.",
+    "What evidence would strengthen a paragraph about {t}?"
+  ];
+  const stems = subjectType.startsWith("Reading") ? stemsReading
+              : subjectType.startsWith("STEM") ? stemsSTEM
+              : stemsWriting;
+
+  const hint = buildHint(subjectType);
+  const check = buildCheck();
+
+  for(let i=0;i<count;i++){
+    const t = topics[i % topics.length] || "the topic";
+    const prompt = stems[i % stems.length].replace("{t}", t);
+    questions.push({topic:t, prompt, hint, check});
+  }
+  return questions;
+}
+
+/* ========= Session generator ========= */
 function generateSession({energy, focus, time, subjectType, mode, preset, topics, toggles, course}){
   const lf = loadFactor(energy, focus, toggles);
   const total = Number(time);
-
   const ramp = buildFlowRamp({energy, focus, subjectType, lf});
-
-  // Reserve ramp time from total. Ensure at least 12 min remaining for actual study.
   const remaining = clamp(total - ramp.rampMin, 12, total);
   const blocks = timePlan(remaining);
+
+  const maxTopics = clamp(Math.round((remaining/20) * (lf < 0.8 ? 2.5 : 3.5)), 2, 7);
+  const chosen = topics.length ? topics.slice(0, maxTopics) : ["Core concepts", "Practice problems", "Common traps"];
 
   const session = {
     meta: { energy, focus, subjectType, mode, preset, total, remaining, course: safeCourseLabel(course), lf },
@@ -584,216 +430,84 @@ function generateSession({energy, focus, time, subjectType, mode, preset, topics
     oneByOne: null
   };
 
-  // helper: choose 3-6 topics depending on time/load
-  const maxTopics = clamp(Math.round((remaining/20) * (lf < 0.8 ? 2.5 : 3.5)), 2, 7);
-  const chosen = topics.length ? topics.slice(0, maxTopics) : ["Core concepts", "Practice problems", "Common traps"];
+  session.plan.push(`Target topics (up to 4): ${chosen.slice(0,4).join(", ")}.`);
+  session.plan.push(`Define success: “I can answer without notes on 2–3 topics.”`);
+  session.plan.push(mode === "Finals Crunch"
+    ? `Use rotation: topic → 2 questions → 1 teach-back line → switch.`
+    : `Start with accuracy, then build speed if capacity allows.`);
 
-  // PLAN block (neutral, structured)
-  session.plan.push(`Pick your target topics (${Math.min(chosen.length, 4)}): ${chosen.slice(0,4).join(", ")}.`);
-  session.plan.push(`Define success for this session: “I can answer questions without notes on 2–3 topics.”`);
-  if(mode === "Finals Crunch"){
-    session.plan.push(`Use rotation: topic → 2 questions → quick teach-back line, then switch.`);
-  } else {
-    session.plan.push(`Start with accuracy, then build speed if capacity allows.`);
-  }
-
-  // Build depending on preset
   if(preset === "One-by-One Q&A"){
     const qCount = clamp(Math.round((blocks.active + blocks.check) * (lf < 0.8 ? 0.35 : 0.5)), 8, 22);
-    const qs = buildOneByOneQuestions(chosen, subjectType, qCount, mode);
-    session.active.push(`Work through questions sequentially. Do not skip ahead; keep the loop: answer → check → adjust.`);
-    session.active.push(`Target pace: ${Math.max(1, Math.round((blocks.active+blocks.check)/Math.max(1,qCount)))} min/question.`);
-    session.check.push(`After every 4 questions: summarize the rule in 1 sentence (no fluff).`);
-    session.check.push(`Log 2 “tempting wrong answers” you chose and why they were tempting.`);
-    session.wrap.push(`Pick 2 missed concepts. Write: “If I see ___, I should use ___ because ___.”`);
-    session.wrap.push(`Next session: redo the 3 hardest questions without looking at explanations.`);
+    const qs = buildOneByOneQuestions(chosen, subjectType, qCount);
+    session.active.push(`Work sequentially: answer → check → adjust. Avoid skipping ahead.`);
+    session.active.push(`Pace target: ~${Math.max(1, Math.round((blocks.active+blocks.check)/Math.max(1,qCount)))} min/question.`);
+    session.check.push(`Every 4 questions: summarize the rule in 1 sentence.`);
+    session.check.push(`Log 2 “tempting wrong answers” and the cue you’ll use next time.`);
+    session.wrap.push(`Write 2 rules: “If I see ___, I use ___ because ___.”`);
+    session.wrap.push(`Next session: redo the 3 hardest prompts without looking.`);
     session.oneByOne = {questions: qs, index: 0, answers: Array(qs.length).fill(""), showHint: false};
-  }
-  else if(preset === "Formula Recognition"){
-    const n = clamp(Math.round((blocks.active + blocks.check) * (lf < 0.8 ? 0.30 : 0.45)), 10, 26);
-    const cards = buildFormulaRecognition(chosen, n, mode);
-    session.active.push(`Do recognition first: scenario → correct test/formula → assumption check.`);
-    session.active.push(`Then do 1–2 mini-calcs only if you have capacity.`);
-    session.check.push(`For each wrong card, write the distinguishing cue (e.g., “paired vs independent”).`);
-    session.wrap.push(`Make a 5-line “decision tree” for the most confusing set (e.g., z vs t vs chi-square).`);
-    session.wrap.push(`Next session: redo the wrong cards first, then add 5 new ones.`);
-    session.oneByOne = {questions: cards, index: 0, answers: Array(cards.length).fill(""), showHint: false, mode: "formula"};
-  }
-  else if(preset === "Fill-in-the-Blank Drill"){
-    const n = clamp(Math.round((blocks.active + blocks.check) * (lf < 0.8 ? 0.40 : 0.60)), 12, 30);
-    const blanks = buildFillBlanks(chosen, n, lf);
-    session.active.push(`Complete blanks in short bursts. Aim for accuracy before speed.`);
-    session.check.push(`Circle the blanks you missed twice. Those become your mini-review list.`);
-    session.wrap.push(`Write 3 corrected statements using the missing words (full sentence).`);
-    session.oneByOne = {questions: blanks, index: 0, answers: Array(blanks.length).fill(""), showHint: lf < 0.8};
-  }
-  else if(preset === "Reverse-Order Teaching"){
-    session.active.push(`Start from “exam output”: write what the professor would ask about ${chosen[0]}.`);
-    session.active.push(`Teach-back scaffold: Definition → Example → Common trap → How to spot it on an exam.`);
-    session.check.push(`Backfill: list the exact steps/assumptions you keep forgetting.`);
-    session.wrap.push(`Close with rapid retrieval: answer 6 quick questions from today’s topics.`);
-  }
-  else if(preset === "Full-Length Practice Exam"){
-    session.active.push(`Mini-diagnostic (5 min): list your weakest 3 areas without looking at notes.`);
-    session.active.push(`Timed block: answer a short set of exam-style questions.`);
-    session.check.push(`Error log: What I chose → Why → Correct rule → New example.`);
-    session.wrap.push(`Redo the hardest 3 questions immediately. That’s the retention step.`);
-  }
-  else if(preset === "Mixed Review (Finals)"){
-    session.active.push(`3-topic rotation: 3-min recap → 2 questions → 1 teach-back line → switch.`);
-    session.check.push(`After rotation, do a “weakest link” pass: the 1 topic you avoided.`);
-    session.wrap.push(`Make tomorrow’s starting list: 3 items only (high yield).`);
+  } else {
+    session.active.push(`Preset scaffolded in MVP. For now, switch to One-by-One Q&A to practice.`);
+    session.check.push(`Identify the 2 concepts that caused hesitation; write the recognition cue.`);
+    session.wrap.push(`Set next session start cue: “Open at Topic X and do 3 prompts.”`);
   }
 
-  // Load adjustments
   if(lf < 0.75){
-    session.plan.push(`Load adjustment: keep tasks small, prioritize completion over volume.`);
-    session.wrap.unshift(`Capacity note: stop while you’re still stable; leave a clear restart cue for later.`);
+    session.plan.push(`Load adjustment: keep tasks small; prioritize completion over volume.`);
+    session.wrap.unshift(`Capacity note: stop while stable; leave a clear restart cue.`);
   } else if(lf > 1.05){
-    session.check.push(`If you’re alert: add a 5-minute speed round at the end (no notes).`);
+    session.check.push(`If alert: add a 5-minute speed round at the end (no notes).`);
   }
 
   return session;
 }
 
-/** =========================
- *  QUESTION GENERATORS
- *  ========================= */
-function buildOneByOneQuestions(topics, subjectType, count, mode){
-  const questions = [];
-  const stemsReading = [
-    "Define {t} in one sentence. Then give a quick example.",
-    "What’s the main purpose of {t}? (Answer like a test key.)",
-    "What’s a common trap or misconception about {t}?",
-    "Explain {t} as if tutoring a friend in 45 seconds.",
-    "How would you recognize {t} in a multiple-choice question?"
-  ];
-  const stemsSTEM = [
-    "Given a scenario, when would you use {t}? List the cue.",
-    "For {t}, name 2 assumptions you should check.",
-    "Set up (don’t fully solve) a problem where {t} is required.",
-    "Interpret the key parameter/result for {t} in context.",
-    "What would a residual/diagnostic issue look like for {t}?"
-  ];
-  const stemsWriting = [
-    "What claim would you make about {t}? Provide one supporting point.",
-    "Rewrite this idea about {t} more clearly (short + direct).",
-    "Give a counterargument for {t}, then respond to it.",
-    "Turn {t} into a 3-bullet mini-outline.",
-    "What evidence would strengthen a paragraph about {t}?"
-  ];
+/* ========= UI State ========= */
+let STATE = {
+  tab: "study",
+  session: null,
+  notesText: "",
+  syllabusText: "",
+  gradeWeights: [],
+};
 
-  const stems = subjectType.startsWith("Reading") ? stemsReading
-                : subjectType.startsWith("STEM") ? stemsSTEM
-                : stemsWriting;
-
-  for(let i=0;i<count;i++){
-    const t = topics[i % topics.length] || "the topic";
-    const template = stems[i % stems.length];
-    const prompt = template.replace("{t}", t);
-    const hint = buildHintFor(prompt, t, mode, subjectType);
-    const check = buildCheckFor(prompt, t, mode, subjectType);
-    questions.push({type:"qa", topic:t, prompt, hint, check});
-  }
-  return questions;
+function setTab(tab){
+  STATE.tab = tab;
+  el("tabStudy").classList.toggle("active", tab === "study");
+  el("tabGrades").classList.toggle("active", tab === "grades");
+  if(tab === "study") renderStudyIdle();
+  else renderGrades();
 }
 
-function buildFormulaRecognition(topics, count, mode){
-  // This is generic recognition cards; user can make them subject-specific with topics.
-  const cardTypes = [
-    (t)=>`Scenario recognition: You need to analyze "${t}". What test/formula would you use, and why?`,
-    (t)=>`Assumption check: For "${t}", list the key assumptions you must verify.`,
-    (t)=>`Interpretation: For "${t}", how would you interpret the main statistic/parameter in context?`,
-    (t)=>`Distinguish: How is "${t}" different from a closely related method? Give one cue.`,
-    (t)=>`Common trap: What makes people choose the wrong method for "${t}"?`
-  ];
-  const questions = [];
-  for(let i=0;i<count;i++){
-    const t = topics[i % topics.length] || "the topic";
-    const make = cardTypes[i % cardTypes.length];
-    const prompt = make(t);
-    const hint = `Look for the cue: variable types (quant/qual), groups (1 vs 2+), independent vs paired, and the question (estimate vs test vs association).`;
-    const check = `Good answer includes: (1) method/test name, (2) 1–2 cues that justify it, (3) at least one assumption or condition check.`;
-    questions.push({type:"formula", topic:t, prompt, hint, check});
-  }
-  return questions;
-}
-
-function buildFillBlanks(topics, count, lf){
-  const starters = [
-    (t)=>`{t}: The key idea is __________, which means __________.`,
-    (t)=>`{t}: A common condition/assumption is __________.`,
-    (t)=>`{t}: If you see __________ in a question, you should consider __________.`,
-    (t)=>`{t}: The interpretation of the main result is __________.`,
-    (t)=>`{t}: A typical mistake is __________; correct approach: __________.`
-  ];
-  const questions = [];
-  for(let i=0;i<count;i++){
-    const t = topics[i % topics.length] || "the topic";
-    const prompt = starters[i % starters.length](t).replaceAll("{t}", t);
-    const hint = lf < 0.8 ? `Use short phrases. You’re aiming for recognition + recall, not perfect prose.` : `Aim for exam-ready phrasing.`;
-    const check = `Check: Did you include the missing key term(s) and a correct meaning? If not, rewrite it once.`;
-    questions.push({type:"blank", topic:t, prompt, hint, check});
-  }
-  return questions;
-}
-
-function buildHintFor(prompt, topic, mode, subjectType){
-  // concise, non-infantilizing hint
-  if(subjectType.startsWith("STEM")){
-    return `Anchor on: what variables you have, how many groups, and whether the goal is estimate, compare, or test association.`;
-  }
-  if(subjectType.startsWith("Writing")){
-    return `Use a tight structure: claim → evidence/example → link back to the question.`;
-  }
-  return `Answer like a key: definition + one example + one cue for recognizing it on exams.`;
-}
-
-function buildCheckFor(prompt, topic, mode, subjectType){
-  return `Check: Is your answer specific, correct, and test-ready? Include one cue that helps you choose/recognize it under exam pressure.`;
-}
-
-/** =========================
- *  RENDERING / STATE
- *  ========================= */
-let STATE = { session: null, stage: "idle" };
-
-const el = (id)=>document.getElementById(id);
-
-function setStage(stage){
-  STATE.stage = stage;
-  el("stagePill").textContent = stage.toUpperCase();
-}
-
-function renderSession(session){
-  STATE.session = session;
-  setStage("flow-ramp");
-  el("outTitle").textContent = session.meta.course;
-  el("outSub").textContent = `Flow Ramp (${session.ramp.rampMin} min) → Study (${session.meta.remaining} min) • Preset: ${session.meta.preset}`;
-
-  renderFlowRamp(session);
+function renderStudyIdle(){
+  el("outTitle").textContent = "Study";
+  el("outSub").textContent = "Generate a session to begin.";
+  el("outBody").innerHTML = `
+    <div class="small">This MVP includes:</div>
+    <ul class="small">
+      <li><b>Flow Ramp</b> (Ignition → Bridge → Flow Entry)</li>
+      <li><b>Study Plan</b> (Plan → Active → Check → Wrap)</li>
+      <li><b>One-by-One Practice</b> for your midterm/finals loop</li>
+    </ul>
+  `;
 }
 
 function renderFlowRamp(session){
-  const {phases, rampMin} = session.ramp;
+  el("outTitle").textContent = session.meta.course;
+  el("outSub").textContent = `Flow Ramp (${session.ramp.rampMin} min) → Study (${session.meta.remaining} min) • Preset: ${session.meta.preset}`;
   const lf = session.meta.lf;
 
   let html = `
-    <div class="progress" aria-label="progress"><div id="progFill"></div></div>
-    <div class="hint" style="margin-top:10px;">
-      Flow Ramp is part of studying: it reduces task-switch cost and gets your brain online.
-    </div>
+    <div class="progress"><div id="progFill" style="width:35%"></div></div>
+    <div class="hint">Flow Ramp reduces task-switch cost and gets your brain online.</div>
     <div class="divider"></div>
   `;
-
-  phases.forEach((p, idx)=>{
+  session.ramp.phases.forEach(p=>{
     html += `
-      <div class="phase" id="phase_${idx}">
+      <div class="phase">
         <h3>${p.title}</h3>
         <div class="meta">Estimated time: ${p.minutes} min</div>
-        <ul>
-          ${p.bullets.map(b=>`<li>${b}</li>`).join("")}
-        </ul>
+        <ul>${p.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>
       </div>
     `;
   });
@@ -804,19 +518,13 @@ function renderFlowRamp(session){
       <button id="btnAdjustLoad">Adjust Load</button>
       <button id="btnShorten">Shorten Ramp</button>
     </div>
-    <div class="small" style="margin-top:10px;">
-      Load factor: <span class="kbd">${lf.toFixed(2)}</span> (lower = lighter pacing)
-    </div>
+    <div class="small" style="margin-top:10px;">Load factor: <span class="kbd">${lf.toFixed(2)}</span></div>
   `;
 
   el("outBody").innerHTML = html;
 
-  // progress fill: 35% at ramp stage
-  el("progFill").style.width = "35%";
-
   el("btnStartStudy").onclick = ()=>renderStudyPlan(session);
   el("btnAdjustLoad").onclick = ()=>{
-    // reduce load by simulating lower factor impact
     session.meta.lf = clamp(session.meta.lf - 0.12, 0.55, 1.15);
     session.ramp = buildFlowRamp({
       energy: session.meta.energy,
@@ -827,43 +535,18 @@ function renderFlowRamp(session){
     renderFlowRamp(session);
   };
   el("btnShorten").onclick = ()=>{
-    // shorten ramp by nudging to "alert/high" behavior for minutes only
-    // (without changing labels)
-    const rampMin = clamp(session.ramp.rampMin - 3, 5, 15);
-    // scale phase times proportionally
-    const phases = session.ramp.phases.map(p=>({...p}));
-    const totalOld = phases.reduce((a,p)=>a+p.minutes,0);
-    phases.forEach(p=>{
-      p.minutes = clamp(Math.round(p.minutes * (rampMin/totalOld)), p.title.includes("Ignition")?2:0, 10);
-    });
-    // fix rounding mismatch
-    let sum = phases.reduce((a,p)=>a+p.minutes,0);
-    while(sum > rampMin){ phases[1].minutes = Math.max(3, phases[1].minutes-1); sum--; }
-    while(sum < rampMin){ phases[1].minutes = Math.min(10, phases[1].minutes+1); sum++; }
-
-    session.ramp.rampMin = rampMin;
-    session.ramp.phases = phases;
+    session.ramp.rampMin = clamp(session.ramp.rampMin - 3, 5, 15);
     renderFlowRamp(session);
   };
 }
 
 function renderStudyPlan(session){
-  setStage("study-plan");
   const {plan, active, check, wrap, blocks} = session;
   el("outSub").textContent = `Study Plan (${session.meta.remaining} min): Plan ${blocks.plan} • Active ${blocks.active} • Check ${blocks.check} • Wrap ${blocks.wrap}`;
 
-  const chosenToggles = [];
-  if(document.getElementById("tBrainfog").checked) chosenToggles.push("Brain fog");
-  if(document.getElementById("tPain").checked) chosenToggles.push("Pain day");
-  if(document.getElementById("tNausea").checked) chosenToggles.push("Nausea day");
-
-  const toggleLine = chosenToggles.length ? `• Toggles: ${chosenToggles.join(", ")}` : "";
-
   let html = `
-    <div class="progress"><div id="progFill"></div></div>
-    <div class="hint" style="margin-top:10px;">
-      Capacity-aware session: ${session.meta.energy} energy, ${session.meta.focus} focus ${toggleLine}
-    </div>
+    <div class="progress"><div id="progFill" style="width:70%"></div></div>
+    <div class="hint">Capacity-aware: ${session.meta.energy} energy • ${session.meta.focus} focus</div>
     <div class="divider"></div>
 
     <div class="phase">
@@ -892,49 +575,28 @@ function renderStudyPlan(session){
       <button class="danger" id="btnNew">New Session</button>
     </div>
   `;
-
   el("outBody").innerHTML = html;
-  el("progFill").style.width = "70%";
 
-  if(session.oneByOne){
-    el("btnOneByOne").onclick = ()=>renderOneByOne(session);
-  }
+  if(session.oneByOne) el("btnOneByOne").onclick = ()=>renderOneByOne(session);
   el("btnBackToRamp").onclick = ()=>renderFlowRamp(session);
-  el("btnNew").onclick = ()=>{
-    STATE.session = null;
-    setStage("idle");
-    el("outTitle").textContent = "Output";
-    el("outSub").textContent = "Generate a session to begin.";
-    el("outBody").innerHTML = `
-      <div class="small">You’ll see:</div>
-      <ul class="small">
-        <li><b>Flow Ramp</b> (Phase 1 → 2 → Flow Entry)</li>
-        <li><b>Study Session</b> (Plan → Active Practice → Check → Wrap)</li>
-        <li><b>One-by-One Q&A</b> mode for sequential practice (if selected)</li>
-      </ul>
-    `;
-  };
+  el("btnNew").onclick = ()=>renderStudyIdle();
 }
 
 function renderOneByOne(session){
-  setStage("one-by-one");
   const obo = session.oneByOne;
   const q = obo.questions[obo.index];
   const total = obo.questions.length;
 
   el("outSub").textContent = `One-by-One Practice • ${obo.index+1} / ${total}`;
 
-  const typeLabel = q.type === "formula" ? "Formula / Method" : q.type === "blank" ? "Fill-in" : "Q&A";
-  const hintVisible = obo.showHint ? "" : "style='display:none'";
-
   let html = `
-    <div class="progress"><div id="progFill"></div></div>
+    <div class="progress"><div id="progFill" style="width:${70 + Math.round((obo.index/(Math.max(1,total-1))) * 30)}%"></div></div>
     <div class="divider"></div>
 
     <div class="qcard">
       <div class="qtop">
         <div>
-          <div class="qtitle">${typeLabel}</div>
+          <div class="qtitle">One-by-One Q&A</div>
           <div class="small" style="margin-top:4px;">Topic: <span class="kbd">${q.topic}</span></div>
         </div>
         <div class="badge">${session.meta.preset}</div>
@@ -944,7 +606,7 @@ function renderOneByOne(session){
       <div style="font-size:13px; font-weight:650; letter-spacing:.15px;">Prompt</div>
       <div class="small" style="margin-top:8px; white-space:pre-wrap;">${q.prompt}</div>
 
-      <div class="answerbox">
+      <div class="answerbox" style="margin-top:10px;">
         <label for="ans">Your answer</label>
         <textarea id="ans" placeholder="Write your answer here...">${obo.answers[obo.index] || ""}</textarea>
       </div>
@@ -955,7 +617,7 @@ function renderOneByOne(session){
         <button id="btnAdjustLoad2">Adjust Load</button>
       </div>
 
-      <div class="feedback" id="hintBox" ${hintVisible}><b>Hint:</b> ${q.hint}</div>
+      <div class="feedback" id="hintBox" style="${obo.showHint ? "" : "display:none"}"><b>Hint:</b> ${q.hint}</div>
       <div class="feedback" id="checkBox" style="display:none;"></div>
 
       <div class="btnbar" style="margin-top:12px;">
@@ -965,63 +627,260 @@ function renderOneByOne(session){
       </div>
     </div>
 
-    <div class="small">Tip: use the same loop you used for midterms/finals: answer → check → write the rule → do one more example.</div>
+    <div class="small">Loop (your exam method): answer → check → write the cue → do one more example.</div>
   `;
 
   el("outBody").innerHTML = html;
 
-  // progress fill: 70-100%
-  const pct = 70 + Math.round((obo.index/(Math.max(1,total-1))) * 30);
-  el("progFill").style.width = pct + "%";
-
-  const saveAnswer = ()=>{
-    obo.answers[obo.index] = el("ans").value;
-  };
+  const saveAnswer = ()=>{ obo.answers[obo.index] = el("ans").value; };
 
   el("btnCheck").onclick = ()=>{
     saveAnswer();
     const box = el("checkBox");
     box.style.display = "block";
-    box.textContent = q.check + "\n\nSelf-check prompt: What cue would help you choose/recall this faster under exam pressure?";
+    box.textContent = q.check + "\n\nSelf-check: What cue would help you recognize this faster under exam pressure?";
   };
 
-  el("btnToggleHint").onclick = ()=>{
-    obo.showHint = !obo.showHint;
-    renderOneByOne(session);
-  };
-
+  el("btnToggleHint").onclick = ()=>{ obo.showHint = !obo.showHint; renderOneByOne(session); };
   el("btnAdjustLoad2").onclick = ()=>{
-    // Adjust load here means: enable hints + reduce next prompts burden by showing shorter checks
     obo.showHint = true;
-    // soften check text (professional) by compressing
-    obo.questions = obo.questions.map(item=>({
-      ...item,
-      check: "Check: state the rule/cue in 1–2 lines. If incorrect, rewrite once using the cue that distinguishes it."
-    }));
+    obo.questions = obo.questions.map(item=>({ ...item, check: "Check: state the rule/cue in 1–2 lines. If incorrect, rewrite once using the distinguishing cue." }));
     renderOneByOne(session);
   };
 
-  el("btnPrev").onclick = ()=>{
-    saveAnswer();
-    obo.index = Math.max(0, obo.index-1);
-    renderOneByOne(session);
+  el("btnPrev").onclick = ()=>{ saveAnswer(); obo.index = Math.max(0, obo.index-1); renderOneByOne(session); };
+  el("btnNext").onclick = ()=>{ saveAnswer(); obo.index = Math.min(total-1, obo.index+1); renderOneByOne(session); };
+  el("btnExit").onclick = ()=>{ saveAnswer(); renderStudyPlan(session); };
+}
+
+/* ========= Grade Calculator ========= */
+/*
+  Reality check: parsing syllabi perfectly is hard without a real AI model.
+  MVP approach:
+  - Upload syllabus as TEXT
+  - We *attempt* to detect common weight patterns with regex
+  - Always allow manual edit
+*/
+function tryParseWeightsFromText(text){
+  const weights = [];
+  const lines = text.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+
+  // Patterns like: "Exams 40%" or "Quizzes - 10%" or "Homework: 15%"
+  const re = /^([A-Za-z][A-Za-z0-9 &\/\-\(\)]{1,50})\s*[:\-–]\s*(\d{1,3})\s*%$/;
+  const re2 = /^([A-Za-z][A-Za-z0-9 &\/\-\(\)]{1,50})\s+(\d{1,3})\s*%$/;
+
+  for(const line of lines){
+    let m = line.match(re) || line.match(re2);
+    if(m){
+      const name = m[1].trim();
+      const pct = Number(m[2]);
+      if(pct >= 0 && pct <= 100) weights.push({name, pct});
+    }
+  }
+
+  // De-dupe by name
+  const map = new Map();
+  for(const w of weights){
+    const key = w.name.toLowerCase();
+    if(!map.has(key)) map.set(key, w);
+  }
+  return Array.from(map.values()).slice(0, 12);
+}
+
+function renderGrades(){
+  el("outTitle").textContent = "Grade Calculator";
+  el("outSub").textContent = "Upload syllabus weights (TXT recommended) or enter manually.";
+
+  const weightsHtml = (STATE.gradeWeights.length ? STATE.gradeWeights : [{name:"", pct:""}])
+    .map((w, i)=>`
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <label>Category</label>
+          <input type="text" id="wName_${i}" value="${(w.name ?? "").replaceAll('"','&quot;')}" placeholder="e.g., Exams" />
+        </div>
+        <div>
+          <label>Weight (%)</label>
+          <input type="number" id="wPct_${i}" value="${w.pct ?? ""}" placeholder="e.g., 40" min="0" max="100" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <label>Current score (%) in this category</label>
+          <input type="number" id="sCur_${i}" placeholder="e.g., 88" min="0" max="100" />
+        </div>
+        <div>
+          <label>Target final course grade (%) (optional)</label>
+          <input type="number" id="target" placeholder="e.g., 90" min="0" max="100" />
+        </div>
+      </div>
+    `).join("");
+
+  el("outBody").innerHTML = `
+    <div class="phase">
+      <h3>Syllabus upload (TXT/MD)</h3>
+      <div class="meta">MVP: attempts to detect lines like “Exams 40%” or “Quizzes: 10%”. Always review.</div>
+      <input id="syllabusFile" type="file" accept=".txt,.md,text/plain,text/markdown" />
+      <div class="btnbar" style="margin-top:10px;">
+        <button id="btnParseSyllabus" class="primary">Auto-detect weights</button>
+        <button id="btnClearWeights">Clear</button>
+        <button id="btnAddRow">Add category</button>
+      </div>
+      <div class="hint">If your syllabus is a PDF, export/copy the grading policy into a .txt file for best results on phone.</div>
+    </div>
+
+    <div class="phase">
+      <h3>Weights + current scores</h3>
+      <div class="meta">Enter weight and your current score in each category. The app calculates your weighted grade.</div>
+      ${weightsHtml}
+      <div class="btnbar" style="margin-top:12px;">
+        <button id="btnCalc" class="primary">Calculate</button>
+      </div>
+      <div class="feedback" id="gradeOut" style="display:none;"></div>
+    </div>
+
+    <div class="small">
+      Note: If a category has no current score yet, leave it blank; it will be excluded from the “current weighted average” and flagged.
+    </div>
+  `;
+
+  el("btnAddRow").onclick = ()=>{
+    STATE.gradeWeights.push({name:"", pct:""});
+    renderGrades();
   };
 
-  el("btnNext").onclick = ()=>{
-    saveAnswer();
-    obo.index = Math.min(total-1, obo.index+1);
-    renderOneByOne(session);
+  el("btnClearWeights").onclick = ()=>{
+    STATE.gradeWeights = [];
+    renderGrades();
   };
 
-  el("btnExit").onclick = ()=>{
-    saveAnswer();
-    renderStudyPlan(session);
+  el("btnParseSyllabus").onclick = async ()=>{
+    const file = el("syllabusFile").files?.[0];
+    if(!file){
+      alert("Upload a TXT/MD syllabus grading policy first.");
+      return;
+    }
+    const text = await file.text();
+    STATE.syllabusText = text;
+    const parsed = tryParseWeightsFromText(text);
+    if(parsed.length === 0){
+      alert("No weight lines detected. Paste the grading breakdown into a TXT and try again, or enter manually.");
+      return;
+    }
+    STATE.gradeWeights = parsed;
+    renderGrades();
+  };
+
+  el("btnCalc").onclick = ()=>{
+    // read rows
+    const rows = [];
+    const n = STATE.gradeWeights.length ? STATE.gradeWeights.length : 1;
+
+    let weightSum = 0;
+    let usedWeightSum = 0;
+    let weightedScoreSum = 0;
+    const missingScores = [];
+
+    for(let i=0;i<n;i++){
+      const name = (el(`wName_${i}`)?.value || "").trim();
+      const pct = Number(el(`wPct_${i}`)?.value);
+      const cur = el(`sCur_${i}`)?.value;
+      const curNum = cur === "" ? null : Number(cur);
+
+      if(!name && (!pct || isNaN(pct))) continue;
+      if(isNaN(pct) || pct < 0 || pct > 100){
+        alert(`Invalid weight at row ${i+1}.`);
+        return;
+      }
+      weightSum += pct;
+
+      if(curNum === null || isNaN(curNum)){
+        missingScores.push(name || `Row ${i+1}`);
+      } else {
+        usedWeightSum += pct;
+        weightedScoreSum += (curNum * (pct/100));
+      }
+
+      rows.push({name, pct, cur: curNum});
+    }
+
+    const out = el("gradeOut");
+    out.style.display = "block";
+
+    const warnings = [];
+    if(weightSum > 100.5 || weightSum < 99.5){
+      warnings.push(`Weights sum to ${weightSum.toFixed(1)}%. (Many syllabi sum to 100%. If yours doesn’t, that’s okay—just confirm.)`);
+    }
+    if(missingScores.length){
+      warnings.push(`Missing current scores for: ${missingScores.join(", ")}.`);
+    }
+
+    const currentWeighted = usedWeightSum > 0 ? (weightedScoreSum / (usedWeightSum/100)) : null;
+
+    let msg = "";
+    if(currentWeighted === null){
+      msg += "No category scores entered yet. Add at least one current score to calculate.\n";
+    } else {
+      msg += `Current weighted average (across categories with scores): ${currentWeighted.toFixed(2)}%\n`;
+      msg += `Coverage: ${usedWeightSum.toFixed(1)}% of total weight has scores entered.\n`;
+    }
+
+    const targetVal = el("target")?.value;
+    const target = targetVal === "" ? null : Number(targetVal);
+    if(target !== null && !isNaN(target)){
+      // Simple “needed average on remaining weight” estimate
+      const remainingW = Math.max(0, 100 - usedWeightSum);
+      if(remainingW === 0){
+        msg += `Target: ${target.toFixed(1)}%. All weights already have scores entered.\n`;
+      } else if(currentWeighted !== null){
+        const earned = weightedScoreSum; // points earned out of usedWeightSum
+        const neededTotal = target; // percent target overall
+        // Let x be average needed on remaining categories:
+        // earned + x*(remainingW/100) = neededTotal
+        const x = (neededTotal - earned) / (remainingW/100);
+        msg += `To finish with ${target.toFixed(1)}%, you’d need an average of ~${x.toFixed(2)}% across the remaining ${remainingW.toFixed(1)}% weight.\n`;
+      }
+    }
+
+    if(warnings.length){
+      msg += "\nNotes:\n- " + warnings.join("\n- ");
+    }
+
+    out.textContent = msg;
   };
 }
 
-/** =========================
- *  WIRE UP CONTROLS
- *  ========================= */
+/* ========= Notes upload ========= */
+async function readNotesFile(){
+  const file = el("notesFile").files?.[0];
+  if(!file){
+    alert("Upload a TXT/MD notes file first.");
+    return null;
+  }
+  return await file.text();
+}
+
+el("btnUseNotes").onclick = async ()=>{
+  const text = await readNotesFile();
+  if(text === null) return;
+  STATE.notesText = text;
+  // Convert raw notes into topic-like lines (simple heuristic)
+  // Here we keep it simple: first 120 lines, trimmed
+  const lines = text.split(/\n+/).map(l=>l.trim()).filter(Boolean).slice(0, 120);
+  el("topics").value = lines.map(l=>"- " + l.replace(/^[-•*]\s*/,'')).join("\n");
+  alert("Topics filled from your uploaded notes (first ~120 lines). You can edit them before generating.");
+};
+
+el("btnAppendNotes").onclick = async ()=>{
+  const text = await readNotesFile();
+  if(text === null) return;
+  STATE.notesText = text;
+  const lines = text.split(/\n+/).map(l=>l.trim()).filter(Boolean).slice(0, 80);
+  const add = lines.map(l=>"- " + l.replace(/^[-•*]\s*/,'')).join("\n");
+  el("topics").value = (el("topics").value.trim() ? (el("topics").value.trim() + "\n") : "") + add;
+  alert("Notes appended to Topics. You can delete anything you don’t want.");
+};
+
+/* ========= Wire up Study generation ========= */
 el("btnGenerate").onclick = ()=>{
   const energy = el("energy").value;
   const focus = el("focus").value;
@@ -1032,14 +891,13 @@ el("btnGenerate").onclick = ()=>{
   const course = el("course").value;
 
   const toggles = {
-    brainfog: el("tBrainfog").checked,
-    pain: el("tPain").checked,
-    nausea: el("tNausea").checked
+    brainfog: el("tBrainfog").checked
   };
 
   const topics = parseTopics(el("topics").value);
   const session = generateSession({energy, focus, time, subjectType, mode, preset, topics, toggles, course});
-  renderSession(session);
+  STATE.session = session;
+  renderFlowRamp(session);
 };
 
 el("btnReset").onclick = ()=>{
@@ -1052,9 +910,15 @@ el("btnReset").onclick = ()=>{
   el("mode").value = "Midterm Review";
   el("preset").value = "One-by-One Q&A";
   el("tBrainfog").checked = false;
-  el("tPain").checked = false;
   el("tNausea").checked = false;
 };
+
+/* ========= Tabs ========= */
+el("tabStudy").onclick = ()=>setTab("study");
+el("tabGrades").onclick = ()=>setTab("grades");
+
+/* init */
+renderStudyIdle();
 </script>
 </body>
 </html>
