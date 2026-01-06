@@ -1,0 +1,1079 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+    span.s1 {font: 12.0px 'Lucida Grande'}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!doctype html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="utf-8" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width,initial-scale=1" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Flow Ramp Study&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="description" content="Flow Ramp + Study Session Builder (condition-aware) — MVP." /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>:root{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--bg: #0b0f14;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--panel: #0f1621;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--panel2:#0e141d;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--text:#e9eef6;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--muted:#a7b3c6;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--soft:#7f8aa1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--accent:#78c6b0; /* sage-ish */</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--accent2:#78a6ff; /* muted blue */</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--border: rgba(255,255,255,.08);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--shadow: 0 12px 40px rgba(0,0,0,.35);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--radius: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--radius2: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--focus: 0 0 0 3px rgba(120,198,176,.25);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--danger:#ff6b6b;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--ok:#78c6b0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--warn:#ffd166;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>*{box-sizing:border-box}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>html,body{height:100%}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin:0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-family: var(--sans);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: radial-gradient(1200px 600px at 20% 0%, rgba(120,166,255,.10), transparent 60%),</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>radial-gradient(900px 500px at 90% 10%, rgba(120,198,176,.12), transparent 55%),</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>var(--bg);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>line-height:1.35;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>a{color:inherit}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.wrap{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>max-width: 980px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: 0 auto;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 28px 18px 56px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.topbar{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>justify-content:space-between;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap:12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom:18px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.brand{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; align-items:center; gap:12px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.logo{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width:40px;height:40px;border-radius:14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: linear-gradient(135deg, rgba(120,198,176,.95), rgba(120,166,255,.85));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: var(--shadow);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>h1{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:18px; margin:0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>letter-spacing:.2px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.tag{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top:2px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.pillbar{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.pill{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding:8px 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid var(--border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius:999px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,.02);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.grid{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:grid;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>grid-template-columns: 1.1fr .9fr;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@media (max-width: 900px){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>.grid{grid-template-columns: 1fr;}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>.pillbar{justify-content:flex-start}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: var(--radius);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: var(--shadow);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>overflow:hidden;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card .head{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 16px 16px 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-bottom: 1px solid var(--border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(0,0,0,.12);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; justify-content:space-between; align-items:flex-start; gap:10px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card .head h2{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin:0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>letter-spacing:.2px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card .head .sub{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top:4px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:12px; color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card .body{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.row{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:grid;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>grid-template-columns: 1fr 1fr;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@media (max-width: 520px){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>.row{grid-template-columns:1fr}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>label{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:block;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom:6px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>select, textarea, input[type="text"]{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width:100%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 12px 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(10,14,20,.65);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>outline:none;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>select:focus, textarea:focus, input[type="text"]:focus{ box-shadow: var(--focus); border-color: rgba(120,198,176,.35); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>textarea{ min-height: 120px; resize: vertical; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.toggles{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; flex-wrap:wrap; gap:10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.toggle{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; align-items:center; gap:8px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid var(--border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,.02);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 10px 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>user-select:none;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.toggle input{ accent-color: var(--accent); }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.btnbar{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; gap:10px; flex-wrap:wrap;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,.03);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 11px 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cursor:pointer;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 13px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>letter-spacing:.15px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button:hover{ border-color: rgba(255,255,255,.18); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button:focus{ outline:none; box-shadow: var(--focus); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.primary{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: linear-gradient(135deg, rgba(120,198,176,.92), rgba(120,166,255,.72));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-color: rgba(120,198,176,.35);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #071017;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.ghost{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: transparent;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.danger{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-color: rgba(255,107,107,.35);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,107,107,.08);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.progress{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>height: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 999px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,.06);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>overflow:hidden;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--border);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.progress &gt; div{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>height:100%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width:0%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: linear-gradient(90deg, rgba(120,198,176,.95), rgba(120,166,255,.80));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.phase{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(0,0,0,.18);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.phase h3{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin:0 0 6px 0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 13px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>letter-spacing:.2px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.phase .meta{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size:12px; color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.phase ul{ margin: 0; padding-left: 18px; color: var(--text); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.phase li{ margin: 6px 0; color: rgba(233,238,246,.95); }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.kbd{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-family: var(--mono);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid var(--border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 2px 6px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,.03);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.small{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.hint{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--soft);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top:8px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.divider{ height:1px; background: var(--border); margin: 14px 0; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.qcard{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border:1px solid var(--border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(0,0,0,.18);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.qtop{ display:flex; justify-content:space-between; align-items:center; gap:10px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.qtitle{ font-weight:700; font-size: 13px; margin:0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.badge{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 11px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #071017;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: linear-gradient(135deg, rgba(120,198,176,.95), rgba(120,166,255,.75));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 5px 9px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 999px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 800;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>letter-spacing:.15px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.answerbox{ margin-top:10px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.answerbox textarea{ min-height: 90px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.feedback{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 10px 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,.02);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: rgba(233,238,246,.92);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 12.5px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>white-space: pre-wrap;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.footer{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="topbar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="brand"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="logo" aria-hidden="true"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;h1&gt;Flow Ramp Study&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="tag"&gt;Condition-aware study sessions • Flow Ramp <span class="s1">→</span> Active practice <span class="s1">→</span> Check <span class="s1">→</span> Wrap&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="pillbar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="pill"&gt;No login&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="pill"&gt;Mobile-first&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="pill"&gt;Neutral tone&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="pill"&gt;Adjust Load&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="grid"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- LEFT: Builder --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="card" id="cardBuilder"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2&gt;Session Builder&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="sub"&gt;Build a study session that matches capacity and your exam methods.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="small"&gt;&lt;span class="kbd"&gt;MVP&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label for="energy"&gt;Energy&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;select id="energy"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Low&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option selected&gt;Medium&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;High&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label for="focus"&gt;Focus&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;select id="focus"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option selected&gt;Foggy&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Okay&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Alert&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="row" style="margin-top:10px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label for="subjectType"&gt;Subject type&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;select id="subjectType"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option selected&gt;Reading / Memorization&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;STEM / Problem-Solving&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Writing / Humanities&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label for="time"&gt;Time available&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;select id="time"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;20&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option selected&gt;35&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;50&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;75&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;120&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="row" style="margin-top:10px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label for="mode"&gt;Mode&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;select id="mode"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option selected&gt;Midterm Review&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Finals Crunch&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Homework / Lab&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label for="preset"&gt;Your method preset&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;select id="preset"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option selected&gt;One-by-One Q&amp;A&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Formula Recognition&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Fill-in-the-Blank Drill&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Reverse-Order Teaching&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Full-Length Practice Exam&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;option&gt;Mixed Review (Finals)&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="row" style="margin-top:10px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label for="course"&gt;Course / topic label (optional)&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;input id="course" type="text" placeholder="e.g., QTM 100 — Inference &amp; Regression" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label&gt;Condition toggles (optional)&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="toggles"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="toggle"&gt;&lt;input type="checkbox" id="tBrainfog"&gt; Brain fog&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="toggle"&gt;&lt;input type="checkbox" id="tPain"&gt; Pain day&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="toggle"&gt;&lt;input type="checkbox" id="tNausea"&gt; Nausea day&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="margin-top:12px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label for="topics"&gt;Topics (paste bullets / headings / messy notes)&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;textarea id="topics" placeholder="Example:</p>
+<p class="p1">- z test vs t test</p>
+<p class="p1">- chi-square test of association</p>
+<p class="p1">- ANOVA + post hoc</p>
+<p class="p1">- regression slope/intercept interpretation</p>
+<p class="p1">- assumptions + residual plots"&gt;&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="hint"&gt;Tip: you can paste exam review topics. The app will generate warm-up + practice items from them.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="btnbar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="primary" id="btnGenerate"&gt;Generate Session&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="ghost" id="btnReset"&gt;Reset&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="footer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>This MVP is an academic support tool. It does not provide medical advice or diagnosis.</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- RIGHT: Output / Flow Ramp / Study --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="card" id="cardOutput"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="head"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2 id="outTitle"&gt;Output&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="sub" id="outSub"&gt;Generate a session to begin.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="small"&gt;&lt;span class="kbd" id="stagePill"&gt;Idle&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="body" id="outBody"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="small"&gt;You’ll see:&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;ul class="small"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;li&gt;&lt;b&gt;Flow Ramp&lt;/b&gt; (Phase 1 <span class="s1">→</span> 2 <span class="s1">→</span> Flow Entry)&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;li&gt;&lt;b&gt;Study Session&lt;/b&gt; (Plan <span class="s1">→</span> Active Practice <span class="s1">→</span> Check <span class="s1">→</span> Wrap)&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;li&gt;&lt;b&gt;One-by-One Q&amp;A&lt;/b&gt; mode for sequential practice (if selected)&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">/** =========================</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*<span class="Apple-converted-space">  </span>UTILITIES</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*<span class="Apple-converted-space">  </span>========================= */</p>
+<p class="p1">function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }</p>
+<p class="p2"><br></p>
+<p class="p1">function parseTopics(raw){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const lines = raw.split(/\n+/).map(s=&gt;s.trim()).filter(Boolean);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const cleaned = [];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(const l of lines){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const x = l.replace(/^[-•*]\s*/,'').trim();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(!x) continue;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// split on semicolons / commas if user pasted a run-on</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const parts = x.split(/;|\s+\|\s+|•/).map(p=&gt;p.trim()).filter(Boolean);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>for(const p of parts){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if(p.length &gt;= 2) cleaned.push(p);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// de-dupe</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return [...new Set(cleaned)];</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }</p>
+<p class="p2"><br></p>
+<p class="p1">function timePlan(total){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// returns typical allocation for Plan / Active / Check / Wrap</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// bias toward active practice</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const plan = clamp(Math.round(total*0.12), 3, 12);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const wrap = clamp(Math.round(total*0.10), 3, 12);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const check = clamp(Math.round(total*0.20), 5, 25);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const active = total - plan - check - wrap;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return {plan, active, check, wrap};</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function loadFactor(energy, focus, toggles){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// lower = lighter load</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let f = 1.0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(energy === "Low") f -= 0.22;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(energy === "High") f += 0.10;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(focus === "Foggy") f -= 0.20;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(focus === "Alert") f += 0.08;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(toggles.brainfog) f -= 0.10;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(toggles.pain) f -= 0.08;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(toggles.nausea) f -= 0.06;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return clamp(f, 0.55, 1.15);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function estRampMinutes(energy, focus, lf){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// adaptive ramp length</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let base = 10;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(energy === "Low" || focus === "Foggy") base = 12;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(energy === "High" &amp;&amp; focus === "Alert") base = 7;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// load factor: lower -&gt; slightly longer ramp, but not huge</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const adj = lf &lt; 0.75 ? 2 : (lf &gt; 1.05 ? -1 : 0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return clamp(base + adj, 5, 15);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function safeCourseLabel(course){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const c = (course||"").trim();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return c ? c : "Your session";</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/** =========================</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*<span class="Apple-converted-space">  </span>FLOW RAMP GENERATION</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*<span class="Apple-converted-space">  </span>========================= */</p>
+<p class="p1">function buildFlowRamp({energy, focus, subjectType, lf}){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const rampMin = estRampMinutes(energy, focus, lf);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const ignition = {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>title: "Phase 1 — Cognitive Ignition",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>minutes: clamp(Math.round(rampMin*0.30), 2, 5),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>bullets: []</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const bridge = {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>title: "Phase 2 — Engagement Bridge",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>minutes: clamp(Math.round(rampMin*0.55), 4, 10),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>bullets: []</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const entry = {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>title: "Flow Entry",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>minutes: clamp(rampMin - ignition.minutes - bridge.minutes, 0, 4),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>bullets: []</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(subjectType.startsWith("Reading")){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>ignition.bullets = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Skim headings and bold terms. Don’t memorize—just orient.",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Mark 3 concepts that feel central (no deep notes yet)."</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>bridge.bullets = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Write a 2–3 sentence summary of one key concept in your own words.",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Answer 1 easy question: “What is this concept trying to explain?”"</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>entry.bullets = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Choose one main topic. Begin active recall or practice questions."</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else if(subjectType.startsWith("STEM")){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>ignition.bullets = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Scan formulas/steps for today’s topic. Identify the ‘type’ of problem.",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Re-read one worked example quickly (no solving yet)."</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>bridge.bullets = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Do 1 medium problem slowly, labeling each step and why it’s used.",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Then do 1 shorter problem with fewer notes."</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>entry.bullets = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Start your main practice set. Aim for steady, not rushed."</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else { // Writing</p>
+<p class="p1"><span class="Apple-converted-space">    </span>ignition.bullets = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Re-read your last paragraph or outline. Highlight the main claim.",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"List 3 points you want to argue/explain (no full sentences yet)."</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>bridge.bullets = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Draft 6–8 bullet lines for one paragraph (claim <span class="s1">→</span> evidence <span class="s1">→</span> link).",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Rewrite one sentence for clarity (short + direct)."</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>entry.bullets = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"Begin drafting your main section. Keep momentum."</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Adjust load: if low factor, remove one bullet from each phase</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(lf &lt; 0.75){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>ignition.bullets = ignition.bullets.slice(0,1);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>bridge.bullets = bridge.bullets.slice(0,1);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(lf &gt; 1.05){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// add one optional bullet</p>
+<p class="p1"><span class="Apple-converted-space">    </span>bridge.bullets.push("Optional: teach the concept out loud in 30–60 seconds.");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>return {rampMin, phases:[ignition, bridge, entry]};</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/** =========================</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*<span class="Apple-converted-space">  </span>STUDY SESSION GENERATION</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*<span class="Apple-converted-space">  </span>========================= */</p>
+<p class="p1">function generateSession({energy, focus, time, subjectType, mode, preset, topics, toggles, course}){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const lf = loadFactor(energy, focus, toggles);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const total = Number(time);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const ramp = buildFlowRamp({energy, focus, subjectType, lf});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Reserve ramp time from total. Ensure at least 12 min remaining for actual study.</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const remaining = clamp(total - ramp.rampMin, 12, total);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const blocks = timePlan(remaining);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const session = {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>meta: { energy, focus, subjectType, mode, preset, total, remaining, course: safeCourseLabel(course), lf },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>ramp,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>blocks,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>plan: [],</p>
+<p class="p1"><span class="Apple-converted-space">    </span>active: [],</p>
+<p class="p1"><span class="Apple-converted-space">    </span>check: [],</p>
+<p class="p1"><span class="Apple-converted-space">    </span>wrap: [],</p>
+<p class="p1"><span class="Apple-converted-space">    </span>oneByOne: null</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// helper: choose 3-6 topics depending on time/load</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const maxTopics = clamp(Math.round((remaining/20) * (lf &lt; 0.8 ? 2.5 : 3.5)), 2, 7);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const chosen = topics.length ? topics.slice(0, maxTopics) : ["Core concepts", "Practice problems", "Common traps"];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// PLAN block (neutral, structured)</p>
+<p class="p1"><span class="Apple-converted-space">  </span>session.plan.push(`Pick your target topics (${Math.min(chosen.length, 4)}): ${chosen.slice(0,4).join(", ")}.`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>session.plan.push(`Define success for this session: “I can answer questions without notes on 2–3 topics.”`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(mode === "Finals Crunch"){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.plan.push(`Use rotation: topic <span class="s1">→</span> 2 questions <span class="s1">→</span> quick teach-back line, then switch.`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.plan.push(`Start with accuracy, then build speed if capacity allows.`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Build depending on preset</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(preset === "One-by-One Q&amp;A"){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const qCount = clamp(Math.round((blocks.active + blocks.check) * (lf &lt; 0.8 ? 0.35 : 0.5)), 8, 22);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const qs = buildOneByOneQuestions(chosen, subjectType, qCount, mode);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.active.push(`Work through questions sequentially. Do not skip ahead; keep the loop: answer <span class="s1">→</span> check <span class="s1">→</span> adjust.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.active.push(`Target pace: ${Math.max(1, Math.round((blocks.active+blocks.check)/Math.max(1,qCount)))} min/question.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.check.push(`After every 4 questions: summarize the rule in 1 sentence (no fluff).`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.check.push(`Log 2 “tempting wrong answers” you chose and why they were tempting.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.wrap.push(`Pick 2 missed concepts. Write: “If I see ___, I should use ___ because ___.”`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.wrap.push(`Next session: redo the 3 hardest questions without looking at explanations.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.oneByOne = {questions: qs, index: 0, answers: Array(qs.length).fill(""), showHint: false};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else if(preset === "Formula Recognition"){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const n = clamp(Math.round((blocks.active + blocks.check) * (lf &lt; 0.8 ? 0.30 : 0.45)), 10, 26);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const cards = buildFormulaRecognition(chosen, n, mode);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.active.push(`Do recognition first: scenario <span class="s1">→</span> correct test/formula <span class="s1">→</span> assumption check.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.active.push(`Then do 1–2 mini-calcs only if you have capacity.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.check.push(`For each wrong card, write the distinguishing cue (e.g., “paired vs independent”).`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.wrap.push(`Make a 5-line “decision tree” for the most confusing set (e.g., z vs t vs chi-square).`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.wrap.push(`Next session: redo the wrong cards first, then add 5 new ones.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.oneByOne = {questions: cards, index: 0, answers: Array(cards.length).fill(""), showHint: false, mode: "formula"};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else if(preset === "Fill-in-the-Blank Drill"){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const n = clamp(Math.round((blocks.active + blocks.check) * (lf &lt; 0.8 ? 0.40 : 0.60)), 12, 30);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const blanks = buildFillBlanks(chosen, n, lf);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.active.push(`Complete blanks in short bursts. Aim for accuracy before speed.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.check.push(`Circle the blanks you missed twice. Those become your mini-review list.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.wrap.push(`Write 3 corrected statements using the missing words (full sentence).`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.oneByOne = {questions: blanks, index: 0, answers: Array(blanks.length).fill(""), showHint: lf &lt; 0.8};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else if(preset === "Reverse-Order Teaching"){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.active.push(`Start from “exam output”: write what the professor would ask about ${chosen[0]}.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.active.push(`Teach-back scaffold: Definition <span class="s1">→</span> Example <span class="s1">→</span> Common trap <span class="s1">→</span> How to spot it on an exam.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.check.push(`Backfill: list the exact steps/assumptions you keep forgetting.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.wrap.push(`Close with rapid retrieval: answer 6 quick questions from today’s topics.`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else if(preset === "Full-Length Practice Exam"){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.active.push(`Mini-diagnostic (5 min): list your weakest 3 areas without looking at notes.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.active.push(`Timed block: answer a short set of exam-style questions.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.check.push(`Error log: What I chose <span class="s1">→</span> Why <span class="s1">→</span> Correct rule <span class="s1">→</span> New example.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.wrap.push(`Redo the hardest 3 questions immediately. That’s the retention step.`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>else if(preset === "Mixed Review (Finals)"){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.active.push(`3-topic rotation: 3-min recap <span class="s1">→</span> 2 questions <span class="s1">→</span> 1 teach-back line <span class="s1">→</span> switch.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.check.push(`After rotation, do a “weakest link” pass: the 1 topic you avoided.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.wrap.push(`Make tomorrow’s starting list: 3 items only (high yield).`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Load adjustments</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(lf &lt; 0.75){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.plan.push(`Load adjustment: keep tasks small, prioritize completion over volume.`);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.wrap.unshift(`Capacity note: stop while you’re still stable; leave a clear restart cue for later.`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else if(lf &gt; 1.05){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.check.push(`If you’re alert: add a 5-minute speed round at the end (no notes).`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>return session;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/** =========================</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*<span class="Apple-converted-space">  </span>QUESTION GENERATORS</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*<span class="Apple-converted-space">  </span>========================= */</p>
+<p class="p1">function buildOneByOneQuestions(topics, subjectType, count, mode){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const questions = [];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const stemsReading = [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"Define {t} in one sentence. Then give a quick example.",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"What’s the main purpose of {t}? (Answer like a test key.)",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"What’s a common trap or misconception about {t}?",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"Explain {t} as if tutoring a friend in 45 seconds.",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"How would you recognize {t} in a multiple-choice question?"</p>
+<p class="p1"><span class="Apple-converted-space">  </span>];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const stemsSTEM = [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"Given a scenario, when would you use {t}? List the cue.",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"For {t}, name 2 assumptions you should check.",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"Set up (don’t fully solve) a problem where {t} is required.",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"Interpret the key parameter/result for {t} in context.",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"What would a residual/diagnostic issue look like for {t}?"</p>
+<p class="p1"><span class="Apple-converted-space">  </span>];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const stemsWriting = [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"What claim would you make about {t}? Provide one supporting point.",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"Rewrite this idea about {t} more clearly (short + direct).",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"Give a counterargument for {t}, then respond to it.",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"Turn {t} into a 3-bullet mini-outline.",</p>
+<p class="p1"><span class="Apple-converted-space">    </span>"What evidence would strengthen a paragraph about {t}?"</p>
+<p class="p1"><span class="Apple-converted-space">  </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const stems = subjectType.startsWith("Reading") ? stemsReading</p>
+<p class="p1"><span class="Apple-converted-space">                </span>: subjectType.startsWith("STEM") ? stemsSTEM</p>
+<p class="p1"><span class="Apple-converted-space">                </span>: stemsWriting;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(let i=0;i&lt;count;i++){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const t = topics[i % topics.length] || "the topic";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const template = stems[i % stems.length];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const prompt = template.replace("{t}", t);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const hint = buildHintFor(prompt, t, mode, subjectType);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const check = buildCheckFor(prompt, t, mode, subjectType);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>questions.push({type:"qa", topic:t, prompt, hint, check});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return questions;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function buildFormulaRecognition(topics, count, mode){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// This is generic recognition cards; user can make them subject-specific with topics.</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const cardTypes = [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>(t)=&gt;`Scenario recognition: You need to analyze "${t}". What test/formula would you use, and why?`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>(t)=&gt;`Assumption check: For "${t}", list the key assumptions you must verify.`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>(t)=&gt;`Interpretation: For "${t}", how would you interpret the main statistic/parameter in context?`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>(t)=&gt;`Distinguish: How is "${t}" different from a closely related method? Give one cue.`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>(t)=&gt;`Common trap: What makes people choose the wrong method for "${t}"?`</p>
+<p class="p1"><span class="Apple-converted-space">  </span>];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const questions = [];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(let i=0;i&lt;count;i++){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const t = topics[i % topics.length] || "the topic";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const make = cardTypes[i % cardTypes.length];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const prompt = make(t);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const hint = `Look for the cue: variable types (quant/qual), groups (1 vs 2+), independent vs paired, and the question (estimate vs test vs association).`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const check = `Good answer includes: (1) method/test name, (2) 1–2 cues that justify it, (3) at least one assumption or condition check.`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>questions.push({type:"formula", topic:t, prompt, hint, check});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return questions;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function buildFillBlanks(topics, count, lf){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const starters = [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>(t)=&gt;`{t}: The key idea is __________, which means __________.`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>(t)=&gt;`{t}: A common condition/assumption is __________.`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>(t)=&gt;`{t}: If you see __________ in a question, you should consider __________.`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>(t)=&gt;`{t}: The interpretation of the main result is __________.`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>(t)=&gt;`{t}: A typical mistake is __________; correct approach: __________.`</p>
+<p class="p1"><span class="Apple-converted-space">  </span>];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const questions = [];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(let i=0;i&lt;count;i++){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const t = topics[i % topics.length] || "the topic";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const prompt = starters[i % starters.length](t).replaceAll("{t}", t);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const hint = lf &lt; 0.8 ? `Use short phrases. You’re aiming for recognition + recall, not perfect prose.` : `Aim for exam-ready phrasing.`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const check = `Check: Did you include the missing key term(s) and a correct meaning? If not, rewrite it once.`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>questions.push({type:"blank", topic:t, prompt, hint, check});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return questions;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function buildHintFor(prompt, topic, mode, subjectType){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// concise, non-infantilizing hint</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(subjectType.startsWith("STEM")){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return `Anchor on: what variables you have, how many groups, and whether the goal is estimate, compare, or test association.`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(subjectType.startsWith("Writing")){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return `Use a tight structure: claim <span class="s1">→</span> evidence/example <span class="s1">→</span> link back to the question.`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return `Answer like a key: definition + one example + one cue for recognizing it on exams.`;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function buildCheckFor(prompt, topic, mode, subjectType){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return `Check: Is your answer specific, correct, and test-ready? Include one cue that helps you choose/recognize it under exam pressure.`;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/** =========================</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*<span class="Apple-converted-space">  </span>RENDERING / STATE</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*<span class="Apple-converted-space">  </span>========================= */</p>
+<p class="p1">let STATE = { session: null, stage: "idle" };</p>
+<p class="p2"><br></p>
+<p class="p1">const el = (id)=&gt;document.getElementById(id);</p>
+<p class="p2"><br></p>
+<p class="p1">function setStage(stage){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>STATE.stage = stage;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("stagePill").textContent = stage.toUpperCase();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function renderSession(session){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>STATE.session = session;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>setStage("flow-ramp");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("outTitle").textContent = session.meta.course;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("outSub").textContent = `Flow Ramp (${session.ramp.rampMin} min) <span class="s1">→</span> Study (${session.meta.remaining} min) • Preset: ${session.meta.preset}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderFlowRamp(session);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function renderFlowRamp(session){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const {phases, rampMin} = session.ramp;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const lf = session.meta.lf;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>let html = `</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="progress" aria-label="progress"&gt;&lt;div id="progFill"&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="hint" style="margin-top:10px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>Flow Ramp is part of studying: it reduces task-switch cost and gets your brain online.</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="divider"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>phases.forEach((p, idx)=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>html += `</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="phase" id="phase_${idx}"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h3&gt;${p.title}&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="meta"&gt;Estimated time: ${p.minutes} min&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>${p.bullets.map(b=&gt;`&lt;li&gt;${b}&lt;/li&gt;`).join("")}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>html += `</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="btnbar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="primary" id="btnStartStudy"&gt;Start Study Session&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="btnAdjustLoad"&gt;Adjust Load&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="btnShorten"&gt;Shorten Ramp&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="small" style="margin-top:10px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>Load factor: &lt;span class="kbd"&gt;${lf.toFixed(2)}&lt;/span&gt; (lower = lighter pacing)</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("outBody").innerHTML = html;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// progress fill: 35% at ramp stage</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("progFill").style.width = "35%";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("btnStartStudy").onclick = ()=&gt;renderStudyPlan(session);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("btnAdjustLoad").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// reduce load by simulating lower factor impact</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.meta.lf = clamp(session.meta.lf - 0.12, 0.55, 1.15);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.ramp = buildFlowRamp({</p>
+<p class="p1"><span class="Apple-converted-space">      </span>energy: session.meta.energy,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>focus: session.meta.focus,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>subjectType: session.meta.subjectType,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>lf: session.meta.lf</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderFlowRamp(session);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("btnShorten").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// shorten ramp by nudging to "alert/high" behavior for minutes only</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// (without changing labels)</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const rampMin = clamp(session.ramp.rampMin - 3, 5, 15);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// scale phase times proportionally</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const phases = session.ramp.phases.map(p=&gt;({...p}));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const totalOld = phases.reduce((a,p)=&gt;a+p.minutes,0);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>phases.forEach(p=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>p.minutes = clamp(Math.round(p.minutes * (rampMin/totalOld)), p.title.includes("Ignition")?2:0, 10);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// fix rounding mismatch</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let sum = phases.reduce((a,p)=&gt;a+p.minutes,0);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>while(sum &gt; rampMin){ phases[1].minutes = Math.max(3, phases[1].minutes-1); sum--; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>while(sum &lt; rampMin){ phases[1].minutes = Math.min(10, phases[1].minutes+1); sum++; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.ramp.rampMin = rampMin;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>session.ramp.phases = phases;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderFlowRamp(session);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function renderStudyPlan(session){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>setStage("study-plan");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const {plan, active, check, wrap, blocks} = session;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("outSub").textContent = `Study Plan (${session.meta.remaining} min): Plan ${blocks.plan} • Active ${blocks.active} • Check ${blocks.check} • Wrap ${blocks.wrap}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const chosenToggles = [];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(document.getElementById("tBrainfog").checked) chosenToggles.push("Brain fog");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(document.getElementById("tPain").checked) chosenToggles.push("Pain day");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(document.getElementById("tNausea").checked) chosenToggles.push("Nausea day");</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const toggleLine = chosenToggles.length ? `• Toggles: ${chosenToggles.join(", ")}` : "";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>let html = `</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="progress"&gt;&lt;div id="progFill"&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="hint" style="margin-top:10px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>Capacity-aware session: ${session.meta.energy} energy, ${session.meta.focus} focus ${toggleLine}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="divider"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="phase"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;h3&gt;Plan (${blocks.plan} min)&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;ul&gt;${plan.map(x=&gt;`&lt;li&gt;${x}&lt;/li&gt;`).join("")}&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="phase"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;h3&gt;Active Practice (${blocks.active} min)&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;ul&gt;${active.map(x=&gt;`&lt;li&gt;${x}&lt;/li&gt;`).join("")}&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="phase"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;h3&gt;Check Understanding (${blocks.check} min)&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;ul&gt;${check.map(x=&gt;`&lt;li&gt;${x}&lt;/li&gt;`).join("")}&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="phase"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;h3&gt;Wrap + Next Step (${blocks.wrap} min)&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;ul&gt;${wrap.map(x=&gt;`&lt;li&gt;${x}&lt;/li&gt;`).join("")}&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="btnbar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>${session.oneByOne ? `&lt;button class="primary" id="btnOneByOne"&gt;Open One-by-One Practice&lt;/button&gt;` : ""}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="btnBackToRamp"&gt;Back to Flow Ramp&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="danger" id="btnNew"&gt;New Session&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("outBody").innerHTML = html;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("progFill").style.width = "70%";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(session.oneByOne){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>el("btnOneByOne").onclick = ()=&gt;renderOneByOne(session);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("btnBackToRamp").onclick = ()=&gt;renderFlowRamp(session);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("btnNew").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>STATE.session = null;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setStage("idle");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>el("outTitle").textContent = "Output";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>el("outSub").textContent = "Generate a session to begin.";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>el("outBody").innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="small"&gt;You’ll see:&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;ul class="small"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;li&gt;&lt;b&gt;Flow Ramp&lt;/b&gt; (Phase 1 <span class="s1">→</span> 2 <span class="s1">→</span> Flow Entry)&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;li&gt;&lt;b&gt;Study Session&lt;/b&gt; (Plan <span class="s1">→</span> Active Practice <span class="s1">→</span> Check <span class="s1">→</span> Wrap)&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;li&gt;&lt;b&gt;One-by-One Q&amp;A&lt;/b&gt; mode for sequential practice (if selected)&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function renderOneByOne(session){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>setStage("one-by-one");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const obo = session.oneByOne;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const q = obo.questions[obo.index];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const total = obo.questions.length;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("outSub").textContent = `One-by-One Practice • ${obo.index+1} / ${total}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const typeLabel = q.type === "formula" ? "Formula / Method" : q.type === "blank" ? "Fill-in" : "Q&amp;A";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const hintVisible = obo.showHint ? "" : "style='display:none'";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>let html = `</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="progress"&gt;&lt;div id="progFill"&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="divider"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="qcard"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="qtop"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="qtitle"&gt;${typeLabel}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="small" style="margin-top:4px;"&gt;Topic: &lt;span class="kbd"&gt;${q.topic}&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="badge"&gt;${session.meta.preset}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="divider"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style="font-size:13px; font-weight:650; letter-spacing:.15px;"&gt;Prompt&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="small" style="margin-top:8px; white-space:pre-wrap;"&gt;${q.prompt}&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="answerbox"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;label for="ans"&gt;Your answer&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;textarea id="ans" placeholder="Write your answer here..."&gt;${obo.answers[obo.index] || ""}&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="btnbar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="primary" id="btnCheck"&gt;Check&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnToggleHint"&gt;${obo.showHint ? "Hide hint" : "Show hint"}&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnAdjustLoad2"&gt;Adjust Load&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="feedback" id="hintBox" ${hintVisible}&gt;&lt;b&gt;Hint:&lt;/b&gt; ${q.hint}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="feedback" id="checkBox" style="display:none;"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="btnbar" style="margin-top:12px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnPrev"&gt;Prev&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnNext"&gt;Next&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="btnExit"&gt;Exit to Plan&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="small"&gt;Tip: use the same loop you used for midterms/finals: answer <span class="s1">→</span> check <span class="s1">→</span> write the rule <span class="s1">→</span> do one more example.&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("outBody").innerHTML = html;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// progress fill: 70-100%</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const pct = 70 + Math.round((obo.index/(Math.max(1,total-1))) * 30);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("progFill").style.width = pct + "%";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const saveAnswer = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>obo.answers[obo.index] = el("ans").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("btnCheck").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>saveAnswer();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const box = el("checkBox");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>box.style.display = "block";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>box.textContent = q.check + "\n\nSelf-check prompt: What cue would help you choose/recall this faster under exam pressure?";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("btnToggleHint").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>obo.showHint = !obo.showHint;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderOneByOne(session);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("btnAdjustLoad2").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Adjust load here means: enable hints + reduce next prompts burden by showing shorter checks</p>
+<p class="p1"><span class="Apple-converted-space">    </span>obo.showHint = true;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// soften check text (professional) by compressing</p>
+<p class="p1"><span class="Apple-converted-space">    </span>obo.questions = obo.questions.map(item=&gt;({</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...item,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>check: "Check: state the rule/cue in 1–2 lines. If incorrect, rewrite once using the cue that distinguishes it."</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderOneByOne(session);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("btnPrev").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>saveAnswer();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>obo.index = Math.max(0, obo.index-1);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderOneByOne(session);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("btnNext").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>saveAnswer();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>obo.index = Math.min(total-1, obo.index+1);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderOneByOne(session);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("btnExit").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>saveAnswer();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderStudyPlan(session);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">/** =========================</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*<span class="Apple-converted-space">  </span>WIRE UP CONTROLS</p>
+<p class="p1"><span class="Apple-converted-space"> </span>*<span class="Apple-converted-space">  </span>========================= */</p>
+<p class="p1">el("btnGenerate").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const energy = el("energy").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const focus = el("focus").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const subjectType = el("subjectType").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const time = el("time").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const mode = el("mode").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const preset = el("preset").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const course = el("course").value;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const toggles = {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>brainfog: el("tBrainfog").checked,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>pain: el("tPain").checked,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>nausea: el("tNausea").checked</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const topics = parseTopics(el("topics").value);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const session = generateSession({energy, focus, time, subjectType, mode, preset, topics, toggles, course});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderSession(session);</p>
+<p class="p1">};</p>
+<p class="p2"><br></p>
+<p class="p1">el("btnReset").onclick = ()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("topics").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("course").value = "";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("energy").value = "Medium";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("focus").value = "Foggy";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("subjectType").value = "Reading / Memorization";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("time").value = "35";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("mode").value = "Midterm Review";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("preset").value = "One-by-One Q&amp;A";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("tBrainfog").checked = false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("tPain").checked = false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>el("tNausea").checked = false;</p>
+<p class="p1">};</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
